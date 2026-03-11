@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Album Reviews</title>
+</head>
+
+<body>
+  <h1>Album Reviews</h1>
+  {% if session.username %}
+  <p>
+    You are logged in as {{ session.username }}
+  </p>
+  {% endif %}
+
+  <p>
+    <a href="/login">Log in</a>
+    <a href="register">Register</a>
+    <a href="/logout">Log out</a>
+  </p>
+</body>
+
+</html>
