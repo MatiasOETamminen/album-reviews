@@ -1,12 +1,20 @@
+import secrets
 import sqlite3
 from flask import Flask
 from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import config
+import users
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
+def check_csrf():
+    if "csrf_token" not in request.form:
+        abort(403)
+    if request.form["csrf_token"] != session["csrf_token"]:
+        abort(403)
 
 @app.route("/")
 def index():
@@ -22,16 +30,16 @@ def create():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if password1 != password2:
-        return "ERROR: the passwords don't match"
-    password_hash = generate_password_hash(password1)
+        flash("ERROR: the passwords don't match")
+        return redirect("/register")
 
     try:
-        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-        db.execute(sql, [username, password_hash])
+        users.create_user(username, password1)
     except sqlite3.IntegrityError:
-        return "ERROR: The selected username is already in use"
+        flash("ERROR: The selected username is already in use")
+        return redirect("/register")
 
-    return "Account created"
+    return redirect("/")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -41,17 +49,18 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-
-        sql = "SELECT password_hash FROM users WHERE username = ?"
-        password_hash = db.query(sql, [username])[0][0]
-
-        if check_password_hash(password_hash, password):
+        user_id = users.check_login(username, password)
+        if user_id:
+            session["user_id"] = user_id
             session["username"] = username
+            session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
-        else:
-            return "ERROR: either the username or the password is incorrect"
+        flash("ERROR: Either the username or the password is incorrect")
+        return redirect("/login")
 
 @app.route("/logout")
 def logout():
-    del session["username"]
+    if "user_id" in session:
+        del session["user_id"]
+        del session["username"]
     return redirect("/")
