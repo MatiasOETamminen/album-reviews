@@ -1,23 +1,7 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Album Reviews</title>
-</head>
+{% block title %}Album Reviews{% endblock %}
 
-<body>
-  <h1>Album Reviews</h1>
-  {% if session.username %}
-  <p>
-    You are logged in as {{ session.username }}
-  </p>
-  {% endif %}
-
-  <p>
-    <a href="/login">Log in</a>
-    <a href="register">Register</a>
-    <a href="/logout">Log out</a>
-  </p>
-</body>
-
-</html>
+{% block content %}
+<h2>Album Reviews</h2>
+{% endblock %}
