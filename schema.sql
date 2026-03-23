@@ -3,3 +3,46 @@ CREATE TABLE users (
     username TEXT UNIQUE,
     password_hash TEXT
 );
+
+CREATE TABLE reviews (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER REFERENCES users,
+    album_id INTEGER REFERENCES albums,
+    cover BLOB,
+    songlist TEXT,
+    content TEXT,
+    grade INTEGER
+);
+
+CREATE TABLE albums (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    year INTEGER
+);
+
+CREATE TABLE genres (
+    id INTEGER PRIMARY KEY,
+    name TEXT UNIQUE
+);
+
+CREATE TABLE albumgenres (
+    album_id INTEGER REFERENCES albums,
+    genre_id INTEGER REFERENCES genres
+);
+
+CREATE TABLE artists (
+    id INTEGER PRIMARY KEY,
+    name TEXT
+);
+
+CREATE TABLE albumartists (
+    album_id INTEGER REFERENCES albums,
+    artist_id INTEGER REFERENCES artists
+);
+
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY,
+    review_id INTEGER REFERENCES reviews,
+    user_id INTEGER REFERENCES users,
+    content TEXT
+);
