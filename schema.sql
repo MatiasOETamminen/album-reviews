@@ -27,7 +27,8 @@ CREATE TABLE genres (
 
 CREATE TABLE albumgenres (
     album_id INTEGER REFERENCES albums,
-    genre_id INTEGER REFERENCES genres
+    genre_id INTEGER REFERENCES genres,
+    PRIMARY KEY (album_id, genre_id)
 );
 
 CREATE TABLE artists (
@@ -37,7 +38,8 @@ CREATE TABLE artists (
 
 CREATE TABLE albumartists (
     album_id INTEGER REFERENCES albums,
-    artist_id INTEGER REFERENCES artists
+    artist_id INTEGER REFERENCES artists,
+    PRIMARY KEY (album_id, artist_id)
 );
 
 CREATE TABLE comments (
