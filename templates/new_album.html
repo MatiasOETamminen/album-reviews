@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}New Review{% endblock %}
+
+{% block content %}
+
+<h2>New Review</h2>
+<form action="/create_album" method="post">
+  <p>
+    <label for="artist">Artist</label>: <br />
+    <input type="text" name="artist" id="album" maxlength="1000" required />
+  </p>
+  <p>
+    <label for="album">Album title</label>: <br />
+    <input type="text" name="album" id="album" maxlength="1000" required />
+  </p>
+  <p>
+    <label for="year">Release year</label>: <br />
+    <input type="text" name="year" id="year" size="8" pattern="[0-9]{4}" required />
+  </p>
+  <!-- <p>
+    <label for="image">Cover image</label>: (.png)<br />
+    <input type="file" name="image" id="image" accept=".png" />
+  </p> -->
+  <p>
+    <label for="songlist">Song list</label>: <br />
+    <textarea name="songlist" id="description" rows="15" cols="60" maxlength="1500" required></textarea>
+  </p>
+  <p>
+    <label for="genres">Genres</label>: (separate by semicolon)<br />
+    <input type="text" name="genres" id="genres" maxlength="1000" required />
+  </p>
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  <input type="submit" value="Submit" />
+</form>
+{% endblock %}

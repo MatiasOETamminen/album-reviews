@@ -1,11 +1,14 @@
 import secrets
 import sqlite3
+import markupsafe
+import re
 from flask import Flask
 from flask import abort, flash, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import config
 import users
+import services
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -64,3 +67,61 @@ def logout():
         del session["user_id"]
         del session["username"]
     return redirect("/")
+
+@app.template_filter()
+def show_lines(content):
+    content = str(markupsafe.escape(content))
+    content = content.replace("\n", "<br />")
+    return markupsafe.Markup(content)
+
+@app.route("/new_album")
+def new_review():
+    require_login()
+    return render_template("new_album.html")
+
+@app.route("/create_album", methods=["POST"])
+def create_item():
+    require_login()
+    check_csrf()
+    artist = request.form["artist"].lower()
+    if not artist or len(artist) > 1000:
+        abort(403)
+    album = request.form["album"].lower()
+    if not album or len(album) > 1000:
+        abort(403)
+    year = request.form["year"]
+    if not re.search("^[0-9]{4}$", year):
+        abort(403)
+    songlist = request.form["songlist"]
+    if not songlist or len(songlist) > 1500:
+        abort(403)
+    genres_str = request.form["genres"].lower()
+    if not genres_str or len(genres_str) > 1000:
+        abort(403)
+    genres = [genre.strip() for genre in genres_str.split(";")]
+    genre_ids = services.add_genres(genres)
+    artist_id = services.add_artist(artist)
+    services.add_album(artist_id, album, year, songlist, genre_ids)
+    return redirect("/" + str(artist) + "/" + str(album))
+
+@app.route("/<artist>/<album>")
+def show_album(artist, album):
+    artist_id = services.get_artist(artist)
+    if not artist:
+        abort(404)
+    artist = services.get_artist_name(artist_id)
+    album_obj = services.get_album(artist_id, album)
+    album = album_obj[0]
+    year = album_obj[1]
+    songlist = album_obj[2]
+    genre_ids = [g[0] for g in services.get_genre_ids(artist_id, album)]
+    genres = []
+    for genre_id in genre_ids:
+        genres.append(services.get_genre_name(genre_id))
+    print(genres)
+    return render_template("show_album.html", artist=artist, album=album,
+                           year=year, songlist=songlist, genres=genres)
+
+def require_login():
+    if "user_id" not in session:
+        abort(403)

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ artist }} - {{ album }}{% endblock %}
+
+{% block content %}
+<h2 style="text-transform: uppercase">{{ artist }} - {{ album }}</h2>
+<p>
+  {{ year }}
+</p>
+<p>
+  {{ songlist | show_lines }}
+</p>
+<p>
+{% for genre in genres %}
+  <li>{{ genre }}</li>
+{% endfor %}
+<p>
+{% endblock %}
