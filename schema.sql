@@ -8,8 +8,6 @@ CREATE TABLE reviews (
     id INTEGER PRIMARY KEY,
     user_id INTEGER REFERENCES users,
     album_id INTEGER REFERENCES albums,
-    cover BLOB,
-    songlist TEXT,
     content TEXT,
     grade INTEGER
 );
@@ -17,7 +15,9 @@ CREATE TABLE reviews (
 CREATE TABLE albums (
     id INTEGER PRIMARY KEY,
     name TEXT,
-    year INTEGER
+    year INTEGER,
+    cover BLOB,
+    songlist TEXT,
 );
 
 CREATE TABLE genres (
