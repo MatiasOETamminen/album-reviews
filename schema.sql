@@ -17,7 +17,7 @@ CREATE TABLE albums (
     name TEXT,
     year INTEGER,
     cover BLOB,
-    songlist TEXT,
+    songlist TEXT
 );
 
 CREATE TABLE genres (
