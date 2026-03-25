@@ -13,12 +13,12 @@ CREATE TABLE reviews (
 );
 
 CREATE TABLE albums (
-    id INTEGER PRIMARY KEY,
     name TEXT,
-    artist REFERENCES artists,
+    artist_id INTEGER REFERENCES artists,
     year INTEGER,
     cover BLOB,
-    songlist TEXT
+    songlist TEXT,
+    PRIMARY KEY (name, artist_id)
 );
 
 CREATE TABLE genres (
