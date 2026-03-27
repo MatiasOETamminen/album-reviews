@@ -1,14 +1,13 @@
 {% extends "layout.html" %}
 
-{% block title %}New Review{% endblock %}
+{% block title %}New Album{% endblock %}
 
 {% block content %}
 
-<h2>New Review</h2>
 <form action="/create_album" method="post">
   <p>
     <label for="artist">Artist</label>: <br />
-    <input type="text" name="artist" id="album" maxlength="1000" required />
+    <input type="text" name="artist" id="artist" maxlength="1000" required />
   </p>
   <p>
     <label for="album">Album title</label>: <br />

@@ -75,18 +75,18 @@ def show_lines(content):
     return markupsafe.Markup(content)
 
 @app.route("/new_album")
-def new_review():
+def new_album():
     require_login()
     return render_template("new_album.html")
 
 @app.route("/create_album", methods=["POST"])
-def create_item():
+def create_album():
     require_login()
     check_csrf()
-    artist = request.form["artist"].lower()
+    artist = request.form["artist"].lower().strip()
     if not artist or len(artist) > 1000:
         abort(403)
-    album = request.form["album"].lower()
+    album = request.form["album"].lower().strip()
     if not album or len(album) > 1000:
         abort(403)
     year = request.form["year"]
@@ -118,9 +118,26 @@ def show_album(artist, album):
     genres = []
     for genre_id in genre_ids:
         genres.append(services.get_genre_name(genre_id))
-    print(genres)
     return render_template("show_album.html", artist=artist, album=album,
                            year=year, songlist=songlist, genres=genres)
+
+@app.route("/search_album")
+def search_album():
+    return render_template("search_album.html")
+
+@app.route("/albumsearch", methods=["POST"])
+def albumsearch():
+    album = request.form["album"].lower().strip()
+    album_obj = services.albumsearch(album)
+    results = []
+    for obj in album_obj:
+        artist_name = services.get_artist_name(obj[1])
+        results.append((obj[0], artist_name))
+    return render_template("search_album.html", results=results)
+
+@app.route("/edit_album", methods=["POST"])
+def edit_album():
+    ...
 
 def require_login():
     if "user_id" not in session:

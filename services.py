@@ -12,12 +12,17 @@ def add_artist(name):
     return name
 
 def get_artist(name):
-    sql = """SELECT id from artists
+    sql = """SELECT id FROM artists
              WHERE name = ?;"""
     return db.query(sql, [name])[0][0]
 
+def albumsearch(name):
+    sql = """SELECT name, artist_id FROM albums
+             WHERE name LIKE ?;"""
+    return db.query(sql, ["%" + name + "%"])
+
 def get_artist_name(artist_id):
-    sql = """SELECT name from artists
+    sql = """SELECT name FROM artists
              WHERE id = ?;"""
     return db.query(sql, [artist_id])[0][0]
 
@@ -34,7 +39,7 @@ def add_genres(genres):
     return genre_ids
 
 def get_genre(genre):
-    sql = """SELECT id from genres
+    sql = """SELECT id FROM genres
              WHERE name = ?;"""
     return db.query(sql, [genre])[0][0]
 

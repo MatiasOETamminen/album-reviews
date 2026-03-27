@@ -17,7 +17,7 @@
     <a href="/login">Log in</a>
     <a href="/register">Register</a>
     <a href="/logout">Log out</a>
-    <a href="/new_album">Add a new album</a>
+    <a href="/search_album">Search albums</a>
   </p>
 
   {% for message in get_flashed_messages() %}
@@ -25,6 +25,8 @@
     {{ message }}
   </div>
   {% endfor %}
+
+  <h2>{% block title %}{% endblock %}</h2>
 
   {% block content %}{% endblock %}
 </body>
