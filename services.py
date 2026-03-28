@@ -79,6 +79,11 @@ def add_review(user_id, album, artist_id, content, grade):
              VALUES (?, ?, ?, ?, ?, datetime('now'));"""
     db.execute(sql, [user_id, album, artist_id, content, grade])
 
+def edit_review(review_id, content, grade):
+    sql = """UPDATE reviews SET content = ?, grade = ?
+             WHERE id = ?;"""
+    db.execute(sql, [content, grade, review_id])
+
 def get_review(review_id):
     sql = """SELECT user_id, content, grade, sent_at FROM reviews
              WHERE id = ?;"""

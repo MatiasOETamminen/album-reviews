@@ -13,6 +13,10 @@ import services
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+def require_login():
+    if "user_id" not in session:
+        abort(403)
+
 def check_csrf():
     if "csrf_token" not in request.form:
         abort(403)
@@ -190,9 +194,39 @@ def review_album(artist, album):
 def show_review(artist, album, review_id):
     artist_id = services.get_artist(artist)
     review = services.get_review(review_id)
+    username = services.get_username(review[0])
     return render_template("show_review.html", artist=artist, artist_id=artist_id,
-                           album=album, review=review)
+                           album=album, review=review, review_id=review_id,
+                           username=username)
 
-def require_login():
-    if "user_id" not in session:
-        abort(403)
+@app.route("/<artist>/<album>/<int:review_id>/edit", methods=["GET", "POST"])
+def edit_review(artist, album, review_id):
+    require_login()
+    artist_id = services.get_artist(artist)
+    review = services.get_review(review_id)
+    if request.method == "GET":
+        content = services.get_review(review_id)[1]
+        filled = {"content": content}
+        return render_template("edit_review.html", artist=artist, artist_id=artist_id,
+                               album=album, review=review, review_id=review_id,
+                               filled=filled)
+    if request.method == "POST":
+        check_csrf()
+        content = request.form["content"]
+        if not content:
+            flash("The review cannot be empty")
+            return render_template("new_review.html", artist=artist, album=album,
+                                   review_id=review_id, filled={})
+        if len(content) > 40000:
+            flash("The length of the review can be at most 40,000 characters")
+            filled = {"content": content}
+            return render_template("new_review.html", artist=artist, album=album,
+                                   review_id=review_id, filled=filled)
+        grade = request.form["grade"]
+        if not grade or grade not in {"1", "2", "3", "4", "5"}:
+            flash("Please select a grade")
+            filled = {"content": content}
+            return render_template("new_review.html", artist=artist, album=album,
+                                   review_id=review_id, filled=filled)
+    services.edit_review(review_id, content, grade)
+    return redirect("/" + str(artist + "/" + str(album) + "/" + str(review_id)))

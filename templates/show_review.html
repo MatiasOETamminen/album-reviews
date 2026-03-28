@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}{{ session.username }}'s review of <a href="/{{ artist }}/{{ album }}" style="text-transform: uppercase">{{ artist }} - {{ album }}</a>{% endblock %}
+{% block title %}{{ username }}'s review of <a href="/{{ artist }}/{{ album }}" style="text-transform: uppercase">{{ artist }} - {{ album }}</a>{% endblock %}
 
 {% block content %}
 
@@ -10,5 +10,11 @@
 <p>
   Grade: {{ review.grade }}/5
 </p>
+
+{% if session.user_id == review.user_id %}
+<p>
+  <a href="/{{ artist }}/{{ album }}/{{ review_id }}/edit">Edit review</a>
+</p>
+{% endif %}
 
 {% endblock %}
