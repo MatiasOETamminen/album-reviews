@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}New Review{% endblock %}
+
+{% block content %}
+
+<form action="/{{ artist }}/{{ album }}/review" method="post">
+  <p>
+    <label for="content">Review</label>: <br />
+    <textarea name="content" id="content" rows="30" cols="60" maxlength="40000" required>{{ filled.content }}</textarea>
+  </p>
+  <p>
+    <label for="grade">Grade</label>: <br />
+    <select name="grade" id="grade">
+      <option value="">--Please select a grade--</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+  </p>
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  <input type="submit" value="Submit" />
+</form>
+{% endblock %}

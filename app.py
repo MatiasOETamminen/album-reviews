@@ -118,8 +118,15 @@ def show_album(artist, album):
     genres = []
     for genre_id in genre_ids:
         genres.append(services.get_genre_name(genre_id))
+    review_ids = services.get_review_ids(artist_id, album)
+    reviews = []
+    for review_id in review_ids:
+        review_obj = services.get_review(review_id[0])
+        username = services.get_username(review_obj[0])
+        reviews.append((review_obj, username, review_id[0]))
     return render_template("show_album.html", artist=artist, album=album,
-                           year=year, songlist=songlist, genres=genres)
+                           year=year, songlist=songlist, genres=genres,
+                           reviews=reviews)
 
 @app.route("/search_album")
 def search_album():
@@ -135,7 +142,7 @@ def albumsearch():
         results.append((obj[0], artist_name))
     return render_template("search_album.html", results=results)
 
-@app.route("/edit/<artist>/<album>", methods=["GET", "POST"])
+@app.route("/<artist>/<album>/edit", methods=["GET", "POST"])
 def edit_album(artist, album):
     require_login()
     artist_id = services.get_artist(artist)
@@ -148,6 +155,43 @@ def edit_album(artist, album):
         content = request.form["songlist"]
         services.update_album(artist_id, album, content)
         return redirect("/" + str(artist) + "/" + str(album))
+
+@app.route("/<artist>/<album>/review", methods=["GET", "POST"])
+def review_album(artist, album):
+    require_login()
+    user_id = session["user_id"]
+    artist_id = services.get_artist(artist)
+    if request.method == "GET":
+        return render_template("new_review.html", artist=artist, album=album,
+                               filled={})
+    if request.method == "POST":
+        check_csrf()
+        content = request.form["content"]
+        if not content:
+            flash("The review cannot be empty")
+            return render_template("new_review.html", artist=artist, album=album,
+                                   filled={})
+        if len(content) > 40000:
+            flash("The length of the review can be at most 40,000 characters")
+            filled = {"content": content}
+            return render_template("new_review.html", artist=artist, album=album,
+                                   filled=filled)
+        grade = request.form["grade"]
+        if not grade or grade not in {"1", "2", "3", "4", "5"}:
+            flash("Please select a grade")
+            filled = {"content": content}
+            return render_template("new_review.html", artist=artist, album=album,
+                                   filled=filled)
+    services.add_review(user_id, album, artist_id, content, grade)
+    review_id = db.last_insert_id()
+    return redirect("/" + str(artist + "/" + str(album) + "/" + str(review_id)))
+
+@app.route("/<artist>/<album>/<int:review_id>")
+def show_review(artist, album, review_id):
+    artist_id = services.get_artist(artist)
+    review = services.get_review(review_id)
+    return render_template("show_review.html", artist=artist, artist_id=artist_id,
+                           album=album, review=review)
 
 def require_login():
     if "user_id" not in session:

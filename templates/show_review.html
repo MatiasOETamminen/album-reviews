@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ session.username }}'s review of <a href="/{{ artist }}/{{ album }}" style="text-transform: uppercase">{{ artist }} - {{ album }}</a>{% endblock %}
+
+{% block content %}
+
+<p>
+  {{ review.content | show_lines }}
+</p>
+<p>
+  Grade: {{ review.grade }}/5
+</p>
+
+{% endblock %}

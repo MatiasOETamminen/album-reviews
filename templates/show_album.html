@@ -9,13 +9,23 @@
   {{ songlist | show_lines }}
 </p>
 <p>
-{% for genre in genres %}
-  <li>{{ genre }}</li>
-{% endfor %}
+  {% for genre in genres %}
+    <li>{{ genre }}</li>
+  {% endfor %}
+</p>
 
 {% if session.user_id %}
 <p>
-  <a href="/edit/{{ artist }}/{{ album }}">Edit songlist</a>
+  <a href="/{{ artist }}/{{ album }}/edit">Edit songlist</a>
+  <a href="/{{ artist }}/{{ album }}/review">Review this album</a>
 </p>
 {% endif %}
+
+<h3>Reviews of this album:</h3>
+
+<p>
+  {% for review in reviews %}
+    <li><a href="/{{ artist }}/{{ album }}/{{ review[2] }}">{{ review[0][2] }}/5</a> by {{ review[1] }} at {{ review[0][3] }}</li>
+  {% endfor %}
+</p>
 {% endblock %}

@@ -72,3 +72,25 @@ def update_album(artist_id, album, songlist):
     sql = """UPDATE albums SET songlist = ?
              WHERE artist_id = ? AND name = ?;"""
     db.execute(sql, [songlist, artist_id, album])
+
+def add_review(user_id, album, artist_id, content, grade):
+    sql = """INSERT INTO reviews (user_id, album_name, album_artist_id, content,
+             grade, sent_at)
+             VALUES (?, ?, ?, ?, ?, datetime('now'));"""
+    db.execute(sql, [user_id, album, artist_id, content, grade])
+
+def get_review(review_id):
+    sql = """SELECT user_id, content, grade, sent_at FROM reviews
+             WHERE id = ?;"""
+    return db.query(sql, [review_id])[0]
+
+def get_review_ids(artist_id, album):
+    sql = """SELECT id FROM reviews
+             WHERE album_artist_id = ?
+             AND album_name = ?;"""
+    return db.query(sql, [artist_id, album])
+
+def get_username(user_id):
+    sql = """SELECT username FROM users
+             WHERE id = ?;"""
+    return db.query(sql, [user_id])[0][0]
