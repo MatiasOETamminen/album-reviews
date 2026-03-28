@@ -135,9 +135,19 @@ def albumsearch():
         results.append((obj[0], artist_name))
     return render_template("search_album.html", results=results)
 
-@app.route("/edit_album", methods=["POST"])
-def edit_album():
-    ...
+@app.route("/edit/<artist>/<album>", methods=["GET", "POST"])
+def edit_album(artist, album):
+    require_login()
+    artist_id = services.get_artist(artist)
+    songlist = services.get_album(artist_id, album)[2]
+    if request.method == "GET":
+        return render_template("edit_album.html", artist=artist, album=album,
+                               songlist=songlist)
+    if request.method == "POST":
+        check_csrf()
+        content = request.form["songlist"]
+        services.update_album(artist_id, album, content)
+        return redirect("/" + str(artist) + "/" + str(album))
 
 def require_login():
     if "user_id" not in session:

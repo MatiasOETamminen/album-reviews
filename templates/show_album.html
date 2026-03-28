@@ -12,5 +12,10 @@
 {% for genre in genres %}
   <li>{{ genre }}</li>
 {% endfor %}
+
+{% if session.user_id %}
 <p>
+  <a href="/edit/{{ artist }}/{{ album }}">Edit songlist</a>
+</p>
+{% endif %}
 {% endblock %}

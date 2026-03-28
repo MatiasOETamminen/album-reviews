@@ -67,3 +67,8 @@ def get_album(artist_id, album):
     sql = """SELECT name, year, songlist FROM albums
              WHERE artist_id = ? AND name = ?;"""
     return db.query(sql, [artist_id, album])[0]
+
+def update_album(artist_id, album, songlist):
+    sql = """UPDATE albums SET songlist = ?
+             WHERE artist_id = ? AND name = ?;"""
+    db.execute(sql, [songlist, artist_id, album])

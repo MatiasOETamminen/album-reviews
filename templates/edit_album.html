@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block title %}Edit album{% endblock %}
+
+{% block content %}
+
+<form action="/edit/{{ artist }}/{{ album }}" method="post">
+  <p>
+    <label for="songlist">Song list</label>: <br />
+    <textarea name="songlist" id="description" rows="15" cols="60" maxlength="1500" required>{{ songlist }}</textarea>
+  </p>
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  <input type="submit" value="Submit" />
+</form>
+
+{% endblock %}
