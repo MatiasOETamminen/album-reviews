@@ -9,3 +9,23 @@
 * Every user has a user page that shows all the reviews the user has published.
 * A user can add metadata such as one or more genres to an album review.
 * Users can comment on reviews.
+
+## Installation
+
+Install the `flask` library:
+
+```
+$ pip install flask
+```
+
+Initialize the database:
+
+```
+$ sqlite3 database.db < schema.sql
+```
+
+You can launch the application with:
+
+```
+$ flask run
+```
