@@ -182,6 +182,11 @@ def review_album(artist, album):
     require_login()
     user_id = session["user_id"]
     artist_id = services.get_artist(artist)
+    if not artist_id:
+        abort(404)
+    album_obj = services.get_album(artist_id, album)
+    if not album_obj:
+        abort(404)
     if request.method == "GET":
         return render_template("new_review.html", artist=artist, album=album,
                                filled={})
@@ -212,8 +217,19 @@ def show_review(artist, album, review_id):
     artist_id = services.get_artist(artist)
     if not artist_id:
         abort(404)
+    album_obj = services.get_album(artist_id, album)
+    if not album_obj:
+        abort(404)
     review = services.get_review(review_id)
     if not review:
+        abort(404)
+    albumreviews = services.get_review_ids(artist_id, album)
+    found = False
+    for albumreview in albumreviews:
+        if int(albumreview[0]) == review_id:
+            found = True
+            break
+    if not found:
         abort(404)
     username = services.get_username(review[0])
     return render_template("show_review.html", artist=artist, artist_id=artist_id,
@@ -224,8 +240,21 @@ def show_review(artist, album, review_id):
 def edit_review(artist, album, review_id):
     require_login()
     artist_id = services.get_artist(artist)
+    if not artist_id:
+        abort(404)
+    album_obj = services.get_album(artist_id, album)
+    if not album_obj:
+        abort(404)
     review = services.get_review(review_id)
     if not review:
+        abort(404)
+    albumreviews = services.get_review_ids(artist_id, album)
+    found = False
+    for albumreview in albumreviews:
+        if int(albumreview[0]) == review_id:
+            found = True
+            break
+    if not found:
         abort(404)
     if request.method == "GET":
         content = services.get_review(review_id)[1]
