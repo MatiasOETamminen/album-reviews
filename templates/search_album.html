@@ -9,12 +9,16 @@
     <input type="text" name="album" id="album" maxlength="1000" />
   <input type="submit" value="Search" />
 </form>
-{% if results %}
-<ul>
-  {% for result in results %}
-  <li style="text-transform: uppercase"><a href="/{{ result[1] + '/' + result[0] }}">{{ result[1] }} - {{ result[0] }}</a></li>
-  {% endfor %}
-</ul>
+{% if results != None %}
+  {% if results != [] %}
+  <ul>
+    {% for result in results %}
+    <li style="text-transform: uppercase"><a href="/{{ result[1] + '/' + result[0] }}">{{ result[1] }} - {{ result[0] }}</a></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No albums match your search query</p>
+  {% endif %}
 {% endif %}
 
 <h2>Add a new album</h2>

@@ -22,6 +22,8 @@
 </p>
 {% endif %}
 
+<h3>Comments:</h3>
+
 {% for comment in comments %}
   <p>{{ comment[3] }} at {{ comment[5] }}{% if comment[6] != None %}, edited at {{ comment[6]}}{% endif %}:</p>
   <p>{{ comment[4] | show_lines }}</p>

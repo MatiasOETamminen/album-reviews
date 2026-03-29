@@ -148,7 +148,7 @@ def show_album(artist, album):
 
 @app.route("/search_album")
 def search_album():
-    return render_template("search_album.html")
+    return render_template("search_album.html", results=None)
 
 @app.route("/albumsearch", methods=["POST"])
 def albumsearch():
