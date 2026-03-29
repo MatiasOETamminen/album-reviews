@@ -232,9 +232,10 @@ def show_review(artist, album, review_id):
     if not found:
         abort(404)
     username = services.get_username(review[0])
+    comments = services.get_comments(review_id)
     return render_template("show_review.html", artist=artist, artist_id=artist_id,
                            album=album, review=review, review_id=review_id,
-                           username=username)
+                           username=username, comments=comments)
 
 @app.route("/<artist>/<album>/<int:review_id>/edit", methods=["GET", "POST"])
 def edit_review(artist, album, review_id):
@@ -312,3 +313,17 @@ def delete_review(artist, album, review_id):
             services.delete_review(review_id)
             return redirect("/" + str(artist) + "/" + str(album))
         return redirect("/" + str(artist) + "/" + str(album) + "/" + str(review_id))
+
+@app.route("/comment", methods=["POST"])
+def comment():
+    require_login()
+    check_csrf()
+    content = request.form["content"]
+    review_id = request.form["review_id"]
+    user_id = session["user_id"]
+    artist = request.form["artist"]
+    album = request.form["album"]
+    if not content or not review_id or not artist or not album:
+        abort(403)
+    services.add_comment(content, review_id, user_id)
+    return redirect("/" + str(artist) + "/" + str(album) + "/" + str(review_id))

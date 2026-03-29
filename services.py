@@ -112,3 +112,15 @@ def get_username(user_id):
              WHERE id = ?;"""
     result = db.query(sql, [user_id])
     return result[0][0] if result else None
+
+def add_comment(content, review_id, user_id):
+    sql = """INSERT INTO comments (review_id, user_id, content, sent_at)
+             VALUES (?, ?, ?, datetime('now'));"""
+    db.execute(sql, [review_id, user_id, content])
+
+def get_comments(review_id):
+    sql = """SELECT c.id, c.review_id, c.user_id, u.username, c.content, 
+             c.sent_at, c.edited_at
+             FROM comments AS c, users AS u
+             WHERE c.user_id = u.id AND c.review_id = ?;"""
+    return db.query(sql, [review_id])

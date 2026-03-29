@@ -22,4 +22,23 @@
 </p>
 {% endif %}
 
+{% for comment in comments %}
+  <p>{{ comment[3] }} at {{ comment[5] }}{% if comment[6] != None %}, edited at {{ comment[6]}}{% endif %}:</p>
+  <p>{{ comment[4] | show_lines }}</p>
+{% endfor %}
+
+{% if session.user_id %}
+<form action="/comment" method="post">
+  <p>
+    <label for="content">Comment</label>: <br />
+    <textarea name="content" id="content" rows="5" cols="60" maxlength="1500" required></textarea>
+  </p>
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  <input type="hidden" name="review_id" value="{{ review_id }}" />
+  <input type="hidden" name="artist" value="{{ artist }}" />
+  <input type="hidden" name="album" value="{{ album }}" />
+  <input type="submit" value="Comment" />
+</form>
+{% endif %}
+
 {% endblock %}
