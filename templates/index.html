@@ -1,7 +1,21 @@
 {% extends "layout.html" %}
 
-{% block title %}Album Reviews{% endblock %}
+{% block title %}Latest reviews{% endblock %}
 
 {% block content %}
-<h2>Album Reviews</h2>
+
+  {% for review in reviews %}
+    <p>
+      {{ review[5] }}{% if review[6] != None %}, edited at {{ review[6] }}{% endif %}: <br />
+      {{ review[1] }} gave
+      <a href="/{{ review[3] }}/{{ review[2] }}" style="text-transform: uppercase">
+        {{ review[3] }} - {{ review [2]}}
+      </a>
+      a grade of
+      <a href="/{{ review[3] }}/{{ review[2] }}/{{ review[0] }}">
+        {{ review[4] }}
+      </a>
+    </p>
+  {% endfor %}
+
 {% endblock %}

@@ -107,6 +107,14 @@ def delete_review(review_id):
     sql = """DELETE FROM reviews WHERE id = ?;"""
     db.execute(sql, [review_id])
 
+def get_all_reviews():
+    sql = """SELECT r.id, u.username, r.album_name, a.name, r.grade, r.sent_at,
+             r.edited_at
+             FROM reviews AS r, users AS u, artists AS a
+             WHERE r.user_id = u.id AND r.album_artist_id = a.id
+             ORDER BY r.sent_at DESC;"""
+    return db.query(sql)
+             
 def get_username(user_id):
     sql = """SELECT username FROM users
              WHERE id = ?;"""

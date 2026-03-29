@@ -25,7 +25,8 @@ def check_csrf():
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    reviews = services.get_all_reviews()
+    return render_template("index.html", reviews=reviews)
 
 @app.route("/register")
 def register():
