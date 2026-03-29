@@ -282,3 +282,33 @@ def edit_review(artist, album, review_id):
                                    review_id=review_id, filled=filled)
     services.edit_review(review_id, content, grade)
     return redirect("/" + str(artist + "/" + str(album) + "/" + str(review_id)))
+
+@app.route("/<artist>/<album>/<int:review_id>/delete", methods=["GET", "POST"])
+def delete_review(artist, album, review_id):
+    require_login()
+    artist_id = services.get_artist(artist)
+    if not artist_id:
+        abort(404)
+    album_obj = services.get_album(artist_id, album)
+    if not album_obj:
+        abort(404)
+    review = services.get_review(review_id)
+    if not review:
+        abort(404)
+    albumreviews = services.get_review_ids(artist_id, album)
+    found = False
+    for albumreview in albumreviews:
+        if int(albumreview[0]) == review_id:
+            found = True
+            break
+    if not found:
+        abort(404)
+    if request.method == "GET":
+        return render_template("delete_review.html", review=review, artist=artist,
+                               album=album, review_id=review_id)
+    if request.method == "POST":
+        check_csrf()
+        if "delete" in request.form:
+            services.delete_review(review_id)
+            return redirect("/" + str(artist) + "/" + str(album))
+        return redirect("/" + str(artist) + "/" + str(album) + "/" + str(review_id))

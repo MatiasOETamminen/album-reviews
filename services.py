@@ -101,6 +101,12 @@ def get_review_ids(artist_id, album):
              AND album_name = ?;"""
     return db.query(sql, [artist_id, album])
 
+def delete_review(review_id):
+    sql = """DELETE FROM comments WHERE review_id = ?;"""
+    db.execute(sql, [review_id])
+    sql = """DELETE FROM reviews WHERE id = ?;"""
+    db.execute(sql, [review_id])
+
 def get_username(user_id):
     sql = """SELECT username FROM users
              WHERE id = ?;"""

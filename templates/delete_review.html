@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block title %}Delete your review of <a href="/{{ artist }}/{{ album }}" style="text-transform: uppercase">{{ artist }} - {{ album }}</a>?{% endblock %}
+
+{% block content %}
+
+<p>
+  Are you sure you want to delete your review?
+</p>
+<form action="/{{ artist }}/{{ album }}/{{ review_id }}/delete" method="post">
+  <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+  <input type="submit" name="delete" value="Yes, I want to delete the review">
+  <input type="submit" name="back" value="No, go back">
+</form>
+
+{% endblock %}

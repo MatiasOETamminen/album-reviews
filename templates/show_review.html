@@ -18,6 +18,7 @@
 {% if session.user_id == review.user_id %}
 <p>
   <a href="/{{ artist }}/{{ album }}/{{ review_id }}/edit">Edit review</a>
+  <a href="/{{ artist }}/{{ album }}/{{ review_id }}/delete">Delete review</a>
 </p>
 {% endif %}
 
