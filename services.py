@@ -80,12 +80,12 @@ def add_review(user_id, album, artist_id, content, grade):
     db.execute(sql, [user_id, album, artist_id, content, grade])
 
 def edit_review(review_id, content, grade):
-    sql = """UPDATE reviews SET content = ?, grade = ?
+    sql = """UPDATE reviews SET content = ?, grade = ?, edited_at = datetime('now')
              WHERE id = ?;"""
     db.execute(sql, [content, grade, review_id])
 
 def get_review(review_id):
-    sql = """SELECT user_id, content, grade, sent_at FROM reviews
+    sql = """SELECT user_id, content, grade, sent_at, edited_at FROM reviews
              WHERE id = ?;"""
     return db.query(sql, [review_id])[0]
 

@@ -3,6 +3,10 @@
 {% block title %}{{ username }}'s review of <a href="/{{ artist }}/{{ album }}" style="text-transform: uppercase">{{ artist }} - {{ album }}</a>{% endblock %}
 
 {% block content %}
+<p>
+  Submitted at {{ review[3] }}{% if review[4] != None %}, edited at {{ review[4] }}
+  {% endif %}
+</p>
 
 <p>
   {{ review.content | show_lines }}

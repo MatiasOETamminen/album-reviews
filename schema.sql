@@ -27,6 +27,7 @@ CREATE TABLE reviews (
     content TEXT,
     grade INTEGER,
     sent_at TEXT,
+    edited_at TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (album_name, album_artist_id)
         REFERENCES albums(name, artist_id)
@@ -54,6 +55,7 @@ CREATE TABLE comments (
     user_id INTEGER NOT NULL,
     content TEXT,
     sent_at TEXT,
+    edited_at TEXT,
     FOREIGN KEY (review_id) REFERENCES reviews(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
