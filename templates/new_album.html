@@ -7,11 +7,11 @@
 <form action="/create_album" method="post">
   <p>
     <label for="artist">Artist</label>: <br />
-    <input type="text" name="artist" id="artist" maxlength="1000" required />
+    <input type="text" name="artist" id="artist" value="{{ filled.artist }}" maxlength="1000" required />
   </p>
   <p>
     <label for="album">Album title</label>: <br />
-    <input type="text" name="album" id="album" maxlength="1000" required />
+    <input type="text" name="album" id="album" value="{{ filled.album }}" maxlength="1000" required />
   </p>
   <p>
     <label for="year">Release year</label>: <br />
@@ -23,11 +23,11 @@
   </p> -->
   <p>
     <label for="songlist">Song list</label>: <br />
-    <textarea name="songlist" id="description" rows="15" cols="60" maxlength="1500" required></textarea>
+    <textarea name="songlist" id="description" rows="15" cols="60" value="{{ filled.songlist }}" maxlength="1500" required></textarea>
   </p>
   <p>
     <label for="genres">Genres</label>: (separate by semicolon)<br />
-    <input type="text" name="genres" id="genres" maxlength="1000" required />
+    <input type="text" name="genres" id="genres" value="{{ filled.genres }}" maxlength="1000" required />
   </p>
   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
   <input type="submit" value="Submit" />

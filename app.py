@@ -81,31 +81,42 @@ def show_lines(content):
 @app.route("/new_album")
 def new_album():
     require_login()
-    return render_template("new_album.html")
+    return render_template("new_album.html", filled={})
 
 @app.route("/create_album", methods=["POST"])
 def create_album():
     require_login()
     check_csrf()
     artist = request.form["artist"].lower().strip()
-    if not artist or len(artist) > 1000:
-        abort(403)
     album = request.form["album"].lower().strip()
-    if not album or len(album) > 1000:
-        abort(403)
     year = request.form["year"]
-    if not re.search("^[0-9]{4}$", year):
-        abort(403)
     songlist = request.form["songlist"]
-    if not songlist or len(songlist) > 1500:
-        abort(403)
     genres_str = request.form["genres"].lower()
+    filled = {"artist": artist, "album": album, "songlist": songlist,
+              "genres": genres_str}
+    if not artist or len(artist) > 1000:
+        flash("The artist name can be at most 1,000 characters")
+        return render_template("new_album.html", filled=filled)
+    if not album or len(album) > 1000:
+        flash("The album name can be at most 1,000 characters")
+        return render_template("new_album.html", filled=filled)
+    if not re.search("^[0-9]{4}$", year):
+        flash("The year is not valid")
+        return render_template("new_album.html", filled=filled)
+    if not songlist or len(songlist) > 1500:
+        flash("The songlist can be at most 1,500 characters")
+        return render_template("new_album.html", filled=filled)
     if not genres_str or len(genres_str) > 1000:
-        abort(403)
+        flash("The genre list can be at most 1,000 characters")
+        return render_template("new_album.html", filled=filled)
     genres = [genre.strip() for genre in genres_str.split(";")]
     genre_ids = services.add_genres(genres)
     artist_id = services.add_artist(artist)
-    services.add_album(artist_id, album, year, songlist, genre_ids)
+    try:
+        services.add_album(artist_id, album, year, songlist, genre_ids)
+    except sqlite3.IntegrityError:
+        flash("This album already exists")
+        return redirect("/" + str(artist) + "/" + str(album))
     return redirect("/" + str(artist) + "/" + str(album))
 
 @app.route("/<artist>/<album>")
@@ -115,6 +126,8 @@ def show_album(artist, album):
         abort(404)
     artist = services.get_artist_name(artist_id)
     album_obj = services.get_album(artist_id, album)
+    if not album_obj:
+        abort(404)
     album = album_obj[0]
     year = album_obj[1]
     songlist = album_obj[2]
@@ -150,7 +163,11 @@ def albumsearch():
 def edit_album(artist, album):
     require_login()
     artist_id = services.get_artist(artist)
+    if not artist_id:
+        abort(404)
     songlist = services.get_album(artist_id, album)[2]
+    if not songlist:
+        abort(404)
     if request.method == "GET":
         return render_template("edit_album.html", artist=artist, album=album,
                                songlist=songlist)
@@ -193,7 +210,11 @@ def review_album(artist, album):
 @app.route("/<artist>/<album>/<int:review_id>")
 def show_review(artist, album, review_id):
     artist_id = services.get_artist(artist)
+    if not artist_id:
+        abort(404)
     review = services.get_review(review_id)
+    if not review:
+        abort(404)
     username = services.get_username(review[0])
     return render_template("show_review.html", artist=artist, artist_id=artist_id,
                            album=album, review=review, review_id=review_id,
@@ -204,6 +225,8 @@ def edit_review(artist, album, review_id):
     require_login()
     artist_id = services.get_artist(artist)
     review = services.get_review(review_id)
+    if not review:
+        abort(404)
     if request.method == "GET":
         content = services.get_review(review_id)[1]
         filled = {"content": content}
