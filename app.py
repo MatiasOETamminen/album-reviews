@@ -4,7 +4,6 @@ import markupsafe
 import re
 from flask import Flask
 from flask import abort, flash, redirect, render_template, request, session
-from werkzeug.security import check_password_hash, generate_password_hash
 import db
 import config
 import users
