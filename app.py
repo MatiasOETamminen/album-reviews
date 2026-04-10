@@ -169,10 +169,18 @@ def edit_album(artist, album):
         abort(404)
     if request.method == "GET":
         return render_template("edit_album.html", artist=artist, album=album,
-                               songlist=songlist)
+                               songlist=songlist,genres=None)
     if request.method == "POST":
         check_csrf()
         content = request.form["songlist"]
+        genres_str = request.form["genres"].lower()
+        if len(genres_str) > 1000:
+            flash("The genre list can be at most 1,000 characters")
+            return render_template("edit_album.html", artist=artist, album=album,
+                               songlist=songlist, genres=genres)
+        genres = [genre.strip() for genre in genres_str.split(";")]
+        genre_ids = services.add_genres(genres)
+        services.update_genres(artist_id, album, genre_ids)
         services.update_album(artist_id, album, content)
         return redirect("/" + str(artist) + "/" + str(album))
 

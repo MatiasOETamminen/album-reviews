@@ -78,6 +78,15 @@ def update_album(artist_id, album, songlist):
              WHERE artist_id = ? AND name = ?;"""
     db.execute(sql, [songlist, artist_id, album])
 
+def update_genres(artist_id, album, genre_ids):
+    for genre_id in genre_ids:
+        try:
+            sql = """INSERT INTO albumgenres (album_name, album_artist_id, genre_id)
+                    VALUES (?, ?, ?);"""
+            db.execute(sql, [album, artist_id, genre_id])
+        except:
+            pass
+
 def add_review(user_id, album, artist_id, content, grade):
     sql = """INSERT INTO reviews (user_id, album_name, album_artist_id, content,
              grade, sent_at)
