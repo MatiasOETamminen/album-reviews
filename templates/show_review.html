@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 
-{% block title %}{{ username }}'s review of <a href="/{{ artist }}/{{ album }}" style="text-transform: uppercase">{{ artist }} - {{ album }}</a>{% endblock %}
+{% block title %}
+  {{ username }}'s review of <a href="/{{ artist }}/{{ album }}" style="text-transform: uppercase">{{ artist }} - {{ album }}</a>
+{% endblock %}
 
 {% block content %}
 <p>
@@ -12,7 +14,7 @@
   {{ review.content | show_lines }}
 </p>
 <p>
-  Grade: {{ review.grade }}/5
+  Grade: {{ review[2] }}/5
 </p>
 
 {% if session.user_id == review.user_id %}
@@ -25,8 +27,13 @@
 <h3>Comments:</h3>
 
 {% for comment in comments %}
-  <p>{{ comment[3] }} at {{ comment[5] }}{% if comment[6] != None %}, edited at {{ comment[6]}}{% endif %}:</p>
-  <p>{{ comment[4] | show_lines }}</p>
+  <p>
+    <a href="/{{ comment[2] }}">{{ comment[3] }}</a> at {{ comment[5] }}{% if comment[6] != None %},
+    edited at {{ comment[6]}}{% endif %}:
+  </p>
+  <p>
+    {{ comment[4] | show_lines }}
+  </p>
 {% endfor %}
 
 {% if session.user_id %}

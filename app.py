@@ -347,3 +347,10 @@ def comment():
         abort(403)
     services.add_comment(content, review_id, user_id)
     return redirect("/" + str(artist) + "/" + str(album) + "/" + str(review_id))
+
+@app.route("/<int:user_id>")
+def show_user(user_id):
+    user_reviews = services.get_user_reviews(user_id)
+    username = services.get_username(user_id)
+    return render_template("show_user.html", user_id=user_id, username=username,
+                           user_reviews=user_reviews)

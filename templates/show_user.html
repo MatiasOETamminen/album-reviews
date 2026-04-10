@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ username }}{% endblock %}
+
+{% block content %}
+
+{% if user_reviews %}
+
+<h3>Reviews by {{ username }}</h3>
+
+<p>
+  <ul>
+  {% for r in user_reviews %}
+    <li><a href="/{{ r[3] }}/{{ r[2] }}" style="text-transform: uppercase">{{ r[3] }} - {{ r[2] }}</a>: 
+        <a href="/{{ r[3] }}/{{ r[2] }}/{{ r[0] }}">{{ r[4] }}/5</a> at {{ r[5] }}{% if r[6] != None %},
+        edited at {{ r[6] }}{% endif %}</li>
+  {% endfor %}
+  </ul>
+</p>
+
+{% endif %}
+
+{% endblock %}

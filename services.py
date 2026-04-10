@@ -146,12 +146,22 @@ def get_all_reviews():
              WHERE r.user_id = u.id AND r.album_artist_id = a.id
              ORDER BY r.sent_at DESC;"""
     return db.query(sql)
-             
+
 def get_username(user_id):
     sql = """SELECT username FROM users
              WHERE id = ?;"""
     result = db.query(sql, [user_id])
     return result[0][0] if result else None
+
+def get_user_reviews(user_id):
+    sql = """SELECT r.id, u.username, r.album_name, a.name, r.grade, r.sent_at,
+             r.edited_at
+             FROM reviews AS r, users AS u, artists AS a
+             WHERE u.id = ?
+             AND r.user_id = u.id
+             AND r.album_artist_id = a.id
+             ORDER BY r.sent_at DESC;"""
+    return db.query(sql, [user_id])
 
 def add_comment(content, review_id, user_id):
     sql = """INSERT INTO comments (review_id, user_id, content, sent_at)
