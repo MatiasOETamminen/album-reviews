@@ -6,7 +6,16 @@
 <form action="/albumsearch" method="post">
   <p>
     <label for="album">Album title</label>: <br />
-    <input type="text" name="album" id="album" maxlength="1000" />
+    <input type="text" name="album" id="album" value="{{ filled.album }}" maxlength="1000" />
+  </p>
+  <p>
+    <label for="artist">Artist</label>: <br />
+    <input type="text" name="artist" id="artist" value="{{ filled.artist }}" maxlength="1000" />
+  </p>
+  <p>
+    <label for="genre">Genre</label>: <br />
+    <input type="text" name="genre" id="genre" value="{{ filled.genre }}" maxlength="1000" />
+  </p>
   <input type="submit" value="Search" />
 </form>
 {% if results != None %}

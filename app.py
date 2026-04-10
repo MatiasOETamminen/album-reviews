@@ -148,15 +148,28 @@ def show_album(artist, album):
 @app.route("/albumsearch", methods=["GET", "POST"])
 def albumsearch():
     if request.method == "GET":
-        return render_template("search_album.html", results=None)
+        return render_template("search_album.html", results=None, filled={})
     if request.method == "POST":
         album = request.form["album"].lower().strip()
-        album_obj = services.albumsearch(album)
+        artist = request.form["artist"].lower().strip()
+        genre = request.form["genre"].lower().strip()
+        filled = {"artist": artist, "album": album, "genre": genre}
         results = []
+        album_obj = []
+        if album:
+            album_obj += services.albumsearch(album)
+        if artist:
+            artist_ids_obj = services.get_artist_fuzzy(artist)
+            artist_ids = [obj[0] for obj in artist_ids_obj]
+            album_obj += services.artistsearch(artist_ids)
+        if genre:
+            genre_id = services.get_genre(genre)
+            if genre_id:
+                album_obj += services.genresearch(genre_id)
         for obj in album_obj:
-            artist_name = services.get_artist_name(obj[1])
-            results.append((obj[0], artist_name))
-        return render_template("search_album.html", results=results)
+                artist_name = services.get_artist_name(obj[1])
+                results.append((obj[0], artist_name))
+        return render_template("search_album.html", results=results, filled=filled)
 
 @app.route("/<artist>/<album>/edit", methods=["GET", "POST"])
 def edit_album(artist, album):

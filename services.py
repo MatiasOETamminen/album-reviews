@@ -22,6 +22,29 @@ def albumsearch(name):
              WHERE name LIKE ?;"""
     return db.query(sql, ["%" + name + "%"])
 
+def get_artist_fuzzy(name):
+    sql = """SELECT id FROM artists
+             WHERE name LIKE ?;"""
+    return db.query(sql, ["%" + name + "%"])
+
+def artistsearch(artist_ids):
+    if not artist_ids:
+        return []
+    placeholders = ",".join(["?"] * len(artist_ids))
+    sql = f"""
+        SELECT name, artist_id
+        FROM albums
+        WHERE artist_id IN ({placeholders});"""
+    return db.query(sql, artist_ids)
+
+def genresearch(id):
+    sql = """SELECT a.name, a.artist_id
+             FROM albums AS a, albumgenres AS g
+             WHERE g.genre_id = ? AND
+             g.album_name = a.name AND
+             g.album_artist_id = a.artist_id;"""
+    return db.query(sql, [id])
+
 def get_artist_name(artist_id):
     sql = """SELECT name FROM artists
              WHERE id = ?;"""
