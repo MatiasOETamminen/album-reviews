@@ -11,6 +11,9 @@
   <p>
     <a href="/albumsearch">Search albums</a>
     <a href="/usersearch">Search users</a>
+    {% if session.username %}
+    <a href="/new_album">Add a new album</a>
+    {% endif %}
   </p>
   <p>
     {% if not session.username %}
