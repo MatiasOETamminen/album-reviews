@@ -173,6 +173,13 @@ def useraverage(user_id):
     result = db.query(sql, [user_id])
     return result[0][0] if result else None
 
+def albumaverage(artist_id, name):
+    sql = """SELECT ROUND(AVG(grade), 2) FROM reviews
+             WHERE album_artist_id = ?
+             AND album_name = ?;"""
+    result = db.query(sql, [artist_id, name])
+    return result[0][0] if result else None
+
 def add_comment(content, review_id, user_id):
     sql = """INSERT INTO comments (review_id, user_id, content, sent_at)
              VALUES (?, ?, ?, datetime('now'));"""

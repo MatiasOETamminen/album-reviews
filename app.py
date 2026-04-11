@@ -141,9 +141,12 @@ def show_album(artist, album):
         review_obj = services.get_review(review_id[0])
         username = services.get_username(review_obj[0])
         reviews.append((review_obj, username, review_id[0]))
+    review_count = len(reviews)
+    review_average = services.albumaverage(artist_id, album)
     return render_template("show_album.html", artist=artist, album=album,
                            year=year, songlist=songlist, genres=genres,
-                           reviews=reviews)
+                           reviews=reviews, review_count=review_count,
+                           review_average=review_average)
 
 @app.route("/albumsearch", methods=["GET", "POST"])
 def albumsearch():
