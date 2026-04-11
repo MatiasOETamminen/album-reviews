@@ -354,3 +354,15 @@ def show_user(user_id):
     username = services.get_username(user_id)
     return render_template("show_user.html", user_id=user_id, username=username,
                            user_reviews=user_reviews)
+
+@app.route("/usersearch", methods=["GET", "POST"])
+def search_user():
+    if request.method == "GET":
+        return render_template("search_user.html", results=None, filled={})
+    if request.method == "POST":
+        username = request.form["name"].strip()
+        filled = {"username": username}
+        results = []
+        if username:
+            results += services.usersearch(username)
+        return render_template("search_user.html", results=results, filled=filled)

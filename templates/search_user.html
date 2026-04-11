@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}Search users{% endblock %}
+
+{% block content %}
+<form action="/usersearch" method="post">
+  <p>
+    <label for="album">Username</label>: <br />
+    <input type="text" name="name" id="name" value="{{ filled.name }}" maxlength="1000" />
+  </p>
+  <input type="submit" value="Search" />
+</form>
+{% if results != None %}
+  {% if results != [] %}
+  <ul>
+    {% for result in results %}
+    <li><a href="/{{ result[0] }}">{{ result[1] }}</a></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No users match your search query</p>
+  {% endif %}
+{% endif %}
+
+{% endblock %}

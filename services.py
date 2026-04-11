@@ -174,3 +174,9 @@ def get_comments(review_id):
              FROM comments AS c, users AS u
              WHERE c.user_id = u.id AND c.review_id = ?;"""
     return db.query(sql, [review_id])
+
+def usersearch(name):
+    sql = """SELECT id, username FROM users
+             WHERE username LIKE ?
+             COLLATE NOCASE;"""
+    return db.query(sql, ["%" + name + "%"])
