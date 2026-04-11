@@ -153,7 +153,8 @@ def albumsearch():
         album = request.form["album"].lower().strip()
         artist = request.form["artist"].lower().strip()
         genre = request.form["genre"].lower().strip()
-        filled = {"artist": artist, "album": album, "genre": genre}
+        year = request.form["year"]
+        filled = {"artist": artist, "album": album, "genre": genre, "year": year}
         results = []
         album_obj = []
         if album:
@@ -166,6 +167,8 @@ def albumsearch():
             genre_id = services.get_genre(genre)
             if genre_id:
                 album_obj += services.genresearch(genre_id)
+        if year:
+            album_obj += services.yearsearch(year)
         for obj in album_obj:
                 artist_name = services.get_artist_name(obj[1])
                 results.append((obj[0], artist_name))

@@ -45,6 +45,11 @@ def genresearch(id):
              g.album_artist_id = a.artist_id;"""
     return db.query(sql, [id])
 
+def yearsearch(year):
+    sql = """SELECT name, artist_id FROM albums
+             WHERE year = ?;"""
+    return db.query(sql, [year])
+
 def get_artist_name(artist_id):
     sql = """SELECT name FROM artists
              WHERE id = ?;"""

@@ -16,6 +16,10 @@
     <label for="genre">Genre</label>: <br />
     <input type="text" name="genre" id="genre" value="{{ filled.genre }}" maxlength="1000" />
   </p>
+  <p>
+    <label for="year">Release year</label>: <br />
+    <input type="text" name="year" id="year" size="8" value="{{ filled.year }}" pattern="[0-9]{4}" />
+  </p>
   <input type="submit" value="Search" />
 </form>
 {% if results != None %}
