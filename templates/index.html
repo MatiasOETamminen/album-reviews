@@ -9,8 +9,8 @@
       {{ review[5] }}{% if review[6] != None %}, edited at {{ review[6] }}{% endif %}: <br />
       <a href="/{{ review[7] }}">{{ review[1] }}</a> gave
       <a href="/{{ review[3] }}/{{ review[2] }}" style="text-transform: uppercase">{{ review[3] }} - {{ review [2]}}</a>
-      a
-      <a href="/{{ review[3] }}/{{ review[2] }}/{{ review[0] }}">grade of {{ review[4] }}</a>
+      a grade of
+      <a href="/{{ review[3] }}/{{ review[2] }}/{{ review[0] }}">{{ review[4] }}/5</a>
     </p>
   {% endfor %}
 
