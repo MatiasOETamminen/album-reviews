@@ -22,7 +22,7 @@
   {% if results != [] %}
   <ul>
     {% for result in results %}
-    <li style="text-transform: uppercase"><a href="/{{ result[1] + '/' + result[0] }}">{{ result[1] }} - {{ result[0] }}</a></li>
+    <li style="text-transform: uppercase"><a href="/{{ result[1] }}/{{ result[0] }}">{{ result[1] }} - {{ result[0] }}</a></li>
     {% endfor %}
   </ul>
   {% else %}
