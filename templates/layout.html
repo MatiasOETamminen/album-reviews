@@ -6,25 +6,29 @@
 </head>
 
 <body>
-  <h1><a href="/">Album Reviews</a></h1>
+  <header>
+    <h1><a href="/">Album Reviews</a></h1>
 
-  <p>
-    <a href="/albumsearch">Search albums</a>
-    <a href="/usersearch">Search users</a>
-    {% if session.username %}
-    <a href="/new_album">Add a new album</a>
-    {% endif %}
-  </p>
-  <p>
-    {% if not session.username %}
-    <a href="/login">Log in</a>
-    <a href="/register">Register</a>
-    {% endif %}
-    {% if session.username %}
-    You are logged in as <a href="/{{ session.user_id}}">{{ session.username }}</a>
-    <a href="/logout">Log out</a>
-    {% endif %}
-  </p>
+    <nav>
+      <p>
+        <a href="/albumsearch">Search albums</a>
+        <a href="/usersearch">Search users</a>
+        {% if session.username %}
+        <a href="/new_album">Add a new album</a>
+        {% endif %}
+      </p>
+      <p>
+        {% if not session.username %}
+        <a href="/login">Log in</a>
+        <a href="/register">Register</a>
+        {% endif %}
+        {% if session.username %}
+        You are logged in as <a href="/{{ session.user_id}}">{{ session.username }}</a>
+        <a href="/logout">Log out</a>
+        {% endif %}
+      </p>
+    </nav>
+  </header>
 
   {% for message in get_flashed_messages() %}
   <div class="info">
@@ -32,9 +36,11 @@
   </div>
   {% endfor %}
 
+  <div class="main">
   <h2>{% block title %}{% endblock %}</h2>
 
   {% block content %}{% endblock %}
+  </div>
 </body>
 
 </html>
