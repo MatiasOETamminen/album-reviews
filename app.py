@@ -355,8 +355,11 @@ def comment():
 def show_user(user_id):
     user_reviews = services.get_user_reviews(user_id)
     username = services.get_username(user_id)
+    review_count = len(user_reviews)
+    review_average = services.useraverage(user_id)
     return render_template("show_user.html", user_id=user_id, username=username,
-                           user_reviews=user_reviews)
+                           user_reviews=user_reviews, review_count=review_count,
+                           review_average=review_average)
 
 @app.route("/usersearch", methods=["GET", "POST"])
 def search_user():

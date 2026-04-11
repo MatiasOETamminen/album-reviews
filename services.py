@@ -168,6 +168,11 @@ def get_user_reviews(user_id):
              ORDER BY r.sent_at DESC;"""
     return db.query(sql, [user_id])
 
+def useraverage(user_id):
+    sql = """SELECT ROUND(AVG(grade), 2) FROM reviews WHERE user_id = ?;"""
+    result = db.query(sql, [user_id])
+    return result[0][0] if result else None
+
 def add_comment(content, review_id, user_id):
     sql = """INSERT INTO comments (review_id, user_id, content, sent_at)
              VALUES (?, ?, ?, datetime('now'));"""

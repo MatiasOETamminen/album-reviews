@@ -8,6 +8,9 @@
 
 <h3>Reviews by {{ username }}</h3>
 
+<p>{{ username }} has written {{ review_count }} reviews.</p>
+<p>The average for the reviews is {{ review_average }}</p>
+
 <p>
   <ul>
   {% for r in user_reviews %}
