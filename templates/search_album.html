@@ -24,6 +24,7 @@
 </form>
 {% if results != None %}
   {% if results != [] %}
+  <h3>Search results:</h3>
   <ul>
     {% for result in results %}
     <li style="text-transform: uppercase"><a href="/{{ result[1] }}/{{ result[0] }}">{{ result[1] }} - {{ result[0] }}</a></li>
