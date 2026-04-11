@@ -146,7 +146,7 @@ def delete_review(review_id):
 
 def get_all_reviews():
     sql = """SELECT r.id, u.username, r.album_name, a.name, r.grade, r.sent_at,
-             r.edited_at
+             r.edited_at, u.id
              FROM reviews AS r, users AS u, artists AS a
              WHERE r.user_id = u.id AND r.album_artist_id = a.id
              ORDER BY r.sent_at DESC;"""
