@@ -30,7 +30,7 @@
 {% for comment in comments %}
   <p>
     <a href="/{{ comment[2] }}">{{ comment[3] }}</a> at {{ comment[5] }}{% if comment[6] != None %},
-    edited at {{ comment[6]}}{% endif %}:
+    edited at {{ comment[6] }}{% endif %}:
   </p>
   <p>
     {{ comment[4] | show_lines }}
