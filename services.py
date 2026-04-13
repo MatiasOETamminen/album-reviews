@@ -17,38 +17,29 @@ def get_artist(name):
     result = db.query(sql, [name])
     return result[0][0] if result else None
 
-def albumsearch(name):
-    sql = """SELECT name, artist_id FROM albums
-             WHERE name LIKE ?;"""
-    return db.query(sql, ["%" + name + "%"])
+def albumsearch(filled):
+    sql = """SELECT lp.name, lp.artist_id
+             FROM albums AS lp
+             LEFT JOIN artists AS ar
+               ON lp.artist_id = ar.id
+             LEFT JOIN albumgenres AS ag
+               ON lp.name = ag.album_name AND lp.artist_id = ag.album_artist_id
+             LEFT JOIN genres AS g
+               ON g.id = ag.genre_id
+             WHERE lp.name LIKE COALESCE(?, lp.name)
+               AND ar.name LIKE COALESCE(?, ar.name)
+               AND g.name = COALESCE(?, g.name)
+               AND lp.year = COALESCE(?, lp.year)
+             GROUP BY lp.name, lp.artist_id;"""
 
-def get_artist_fuzzy(name):
-    sql = """SELECT id FROM artists
-             WHERE name LIKE ?;"""
-    return db.query(sql, ["%" + name + "%"])
+    arguments = [
+        "%" + filled["album"] + "%" if filled["album"] else None,
+        "%" + filled["artist"] + "%" if filled["artist"] else None,
+        filled["genre"],
+        filled["year"]
+    ]
 
-def artistsearch(artist_ids):
-    if not artist_ids:
-        return []
-    placeholders = ",".join(["?"] * len(artist_ids))
-    sql = f"""
-        SELECT name, artist_id
-        FROM albums
-        WHERE artist_id IN ({placeholders});"""
-    return db.query(sql, artist_ids)
-
-def genresearch(id):
-    sql = """SELECT a.name, a.artist_id
-             FROM albums AS a, albumgenres AS g
-             WHERE g.genre_id = ? AND
-             g.album_name = a.name AND
-             g.album_artist_id = a.artist_id;"""
-    return db.query(sql, [id])
-
-def yearsearch(year):
-    sql = """SELECT name, artist_id FROM albums
-             WHERE year = ?;"""
-    return db.query(sql, [year])
+    return db.query(sql, arguments)
 
 def get_artist_name(artist_id):
     sql = """SELECT name FROM artists
