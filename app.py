@@ -2,6 +2,7 @@ import secrets
 import sqlite3
 import markupsafe
 import re
+import math
 from flask import Flask
 from flask import abort, flash, redirect, render_template, request, session
 import db
@@ -149,23 +150,33 @@ def show_album(artist, album):
                            review_average=review_average)
 
 @app.route("/albumsearch", methods=["GET", "POST"])
-def albumsearch():
+def albumsearch(page=1):
+    page_size = 10
     if request.method == "GET":
-        return render_template("search_album.html", results=None, filled={})
+        length = 0
+        page_count = 1
+        return render_template("search_album.html", results=None, filled={},
+                               page=page, page_count=page_count)
     if request.method == "POST":
         album = request.form["album"].lower().strip()
         artist = request.form["artist"].lower().strip()
         genre = request.form["genre"].lower().strip()
         year = request.form["year"]
+        page = int(request.form["page"])
         filled = {"artist": artist, "album": album, "genre": genre, "year": year}
         filled = {k: v if v else None for k, v in filled.items()}
-        results = []
-        album_obj = services.albumsearch(filled)
-        for obj in album_obj:
-                artist_name = services.get_artist_name(obj[1])
-                results.append((obj[0], artist_name))
+        length = services.albumsearch_count(filled)
+        print(length)
+        album_obj = services.albumsearch(filled, page, page_size)
+        page_count = math.ceil(length / page_size)
+        page_count = max(page_count, 1)
+        if page < 1:
+            page = 1
+        if page > page_count:
+            page = page_count
         filled = {k: v if v is not None else "" for k, v in filled.items()}
-        return render_template("search_album.html", results=results, filled=filled)
+        return render_template("search_album.html", album_obj=album_obj,
+                               filled=filled, page=page, page_count=page_count)
 
 @app.route("/<artist>/<album>/edit", methods=["GET", "POST"])
 def edit_album(artist, album):

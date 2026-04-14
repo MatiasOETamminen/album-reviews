@@ -21,15 +21,39 @@
     <input type="text" name="year" id="year" size="8" value="{{ filled.year }}" pattern="[0-9]{4}" />
   </p>
   <input type="submit" value="Search" />
+  <input type="hidden" name="page" value="{{ page }}" />
 </form>
 {% if results != None %}
   {% if results != [] %}
   <h3>Search results:</h3>
   <ul>
-    {% for result in results %}
-    <li style="text-transform: uppercase"><a href="/{{ result[1] }}/{{ result[0] }}">{{ result[1] }} - {{ result[0] }}</a></li>
+    {% for obj in album_obj %}
+    <li style="text-transform: uppercase"><a href="/{{ obj[2] }}/{{ obj[0] }}">{{ obj[2] }} - {{ obj[0] }}</a></li>
     {% endfor %}
   </ul>
+  <div id="pagination">
+    {% if page_count > 1 %}
+    <p>
+      <form action="/albumsearch" method="post">
+        <input type="submit" value="&lt;" />
+        <input type="hidden" name="page" value="{{ page - 1 }}" />
+        <input type="hidden" name="album" value="{{ filled.album }}" />
+        <input type="hidden" name="artist" value="{{ filled.artist}}" />
+        <input type="hidden" name="genre" value="{{ filled.genre }}" />
+        <input type="hidden" name="year" value="{{ filled.year }}" />
+      </form>
+      Page {{ page }}/{{ page_count}}
+      <form action="/albumsearch" method="post">
+        <input type="submit" value="&gt;" />
+        <input type="hidden" name="page" value="{{ page + 1 }}" />
+        <input type="hidden" name="album" value="{{ filled.album }}" />
+        <input type="hidden" name="artist" value="{{ filled.artist}}" />
+        <input type="hidden" name="genre" value="{{ filled.genre }}" />
+        <input type="hidden" name="year" value="{{ filled.year }}" />
+      </form>
+    </p>
+    {% endif %}
+  </div>
   {% else %}
   <p>No albums match your search query</p>
   {% endif %}

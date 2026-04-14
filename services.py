@@ -17,8 +17,8 @@ def get_artist(name):
     result = db.query(sql, [name])
     return result[0][0] if result else None
 
-def albumsearch(filled):
-    sql = """SELECT lp.name, lp.artist_id
+def albumsearch(filled, page, page_size):
+    sql = """SELECT lp.name, lp.artist_id, ar.name
              FROM albums AS lp
              LEFT JOIN artists AS ar
                ON lp.artist_id = ar.id
@@ -30,16 +30,44 @@ def albumsearch(filled):
                AND ar.name LIKE COALESCE(?, ar.name)
                AND g.name = COALESCE(?, g.name)
                AND lp.year = COALESCE(?, lp.year)
-             GROUP BY lp.name, lp.artist_id;"""
+             GROUP BY lp.name, lp.artist_id
+             LIMIT ? OFFSET ?;"""
+
+    limit = page_size
+    offset = page_size * (page - 1)
+    arguments = [
+        "%" + filled["album"] + "%" if filled["album"] else None,
+        "%" + filled["artist"] + "%" if filled["artist"] else None,
+        filled["genre"],
+        filled["year"],
+        limit,
+        offset
+    ]
+
+    return db.query(sql, arguments)
+
+def albumsearch_count(filled):
+    sql = """SELECT COUNT(DISTINCT lp.name || '|' || ar.name)
+             FROM albums AS lp
+             LEFT JOIN artists AS ar
+               ON lp.artist_id = ar.id
+             LEFT JOIN albumgenres AS ag
+               ON lp.name = ag.album_name AND lp.artist_id = ag.album_artist_id
+             LEFT JOIN genres AS g
+               ON g.id = ag.genre_id
+             WHERE lp.name LIKE COALESCE(?, lp.name)
+               AND ar.name LIKE COALESCE(?, ar.name)
+               AND g.name = COALESCE(?, g.name)
+               AND lp.year = COALESCE(?, lp.year);"""
 
     arguments = [
         "%" + filled["album"] + "%" if filled["album"] else None,
         "%" + filled["artist"] + "%" if filled["artist"] else None,
         filled["genre"],
-        filled["year"]
+        filled["year"],
     ]
 
-    return db.query(sql, arguments)
+    return db.query(sql, arguments)[0][0]
 
 def get_artist_name(artist_id):
     sql = """SELECT name FROM artists
