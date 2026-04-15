@@ -55,13 +55,11 @@
     <form action="/{{ album_data['artist'] }}/{{ album_data['album'] }}" method="post">
       <input type="submit" value="&lt;" />
       <input type="hidden" name="page" value="{{ page - 1 }}" />
-      <input type="hidden" name="album_data" value="{{ album_data }}" />
     </form>
     Page {{ page }}/{{ page_count}}
     <form action="/{{ album_data['artist'] }}/{{ album_data['album'] }}" method="post">
       <input type="submit" value="&gt;" />
       <input type="hidden" name="page" value="{{ page + 1 }}" />
-      <input type="hidden" name="album_data" value="{{ album_data }}" />
     </form>
   </p>
 </div>
