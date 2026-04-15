@@ -157,6 +157,32 @@ def get_review_ids(artist_id, album):
              AND album_name = ?;"""
     return db.query(sql, [artist_id, album])
 
+def count_album_reviews(artist_id, album):
+    sql = """SELECT COUNT(id)
+             FROM reviews
+             WHERE album_name = ?
+             AND album_artist_id = ?;"""
+    return db.query(sql, [album, artist_id])[0][0]
+
+def get_album_reviews(artist_id, album, page, page_size):
+    sql = """SELECT r.id, u.id, u.username, lp.name, ar.name,
+             r.grade, r.sent_at, r.edited_at
+             FROM reviews AS r
+             LEFT JOIN users AS u
+               ON r.user_id = u.id
+             LEFT JOIN artists AS ar
+               ON r.album_artist_id = ar.id
+             LEFT JOIN albums AS lp
+               ON lp.name = r.album_name AND lp.artist_id = ar.id
+             WHERE ar.id = ? AND lp.name = ?
+             GROUP BY r.id
+             ORDER BY r.sent_at DESC
+             LIMIT ? OFFSET ?;
+             """
+    limit = page_size
+    offset = page_size * (page - 1)
+    return db.query(sql, [artist_id, album, limit, offset])
+
 def delete_review(review_id):
     sql = """DELETE FROM comments WHERE review_id = ?;"""
     db.execute(sql, [review_id])

@@ -3,6 +3,7 @@ import sqlite3
 import markupsafe
 import re
 import math
+import ast
 from flask import Flask
 from flask import abort, flash, redirect, render_template, request, session
 import db
@@ -120,34 +121,47 @@ def create_album():
         return redirect("/" + str(artist) + "/" + str(album))
     return redirect("/" + str(artist) + "/" + str(album))
 
-@app.route("/<artist>/<album>")
-def show_album(artist, album):
+@app.route("/<artist>/<album>", methods=["GET", "POST"])
+def show_album(artist, album, page=1):
+    page_size = 10
     artist_id = services.get_artist(artist)
+    review_count = services.count_album_reviews(artist_id, album)
+    page_count = math.ceil(review_count / page_size)
+    page_count = max(page_count, 1)
+    review_average = services.albumaverage(artist_id, album)
     if not artist:
         abort(404)
-    artist = services.get_artist_name(artist_id)
-    album_obj = services.get_album(artist_id, album)
-    if not album_obj:
-        abort(404)
-    album = album_obj[0]
-    year = album_obj[1]
-    songlist = album_obj[2]
-    genre_ids = [g[0] for g in services.get_genre_ids(artist_id, album)]
-    genres = []
-    for genre_id in genre_ids:
-        genres.append(services.get_genre_name(genre_id))
-    review_ids = services.get_review_ids(artist_id, album)
-    reviews = []
-    for review_id in review_ids:
-        review_obj = services.get_review(review_id[0])
-        username = services.get_username(review_obj[0])
-        reviews.append((review_obj, username, review_id[0]))
-    review_count = len(reviews)
-    review_average = services.albumaverage(artist_id, album)
-    return render_template("show_album.html", artist=artist, album=album,
-                           year=year, songlist=songlist, genres=genres,
-                           reviews=reviews, review_count=review_count,
-                           review_average=review_average)
+    if request.method == "GET":
+        album_obj = services.get_album(artist_id, album)
+        if not album_obj:
+            abort(404)
+        album = album_obj[0]
+        year = album_obj[1]
+        songlist = album_obj[2]
+        genre_ids = [g[0] for g in services.get_genre_ids(artist_id, album)]
+        genres = []
+        for genre_id in genre_ids:
+            genres.append(services.get_genre_name(genre_id))
+        reviews = services.get_album_reviews(artist_id, album, page, page_size)
+        album_data = {"artist": artist, "album": album,
+                      "year": year, "songlist": songlist, "genres": genres}
+        return render_template("show_album.html", album_data=album_data,
+                               reviews=reviews, review_count=review_count,
+                               review_average=review_average, page=page,
+                               page_count=page_count)
+    if request.method == "POST":
+        album_data = ast.literal_eval(request.form["album_data"])
+        page = int(request.form["page"])
+        if page < 1:
+            page = 1
+        if page > page_count:
+            page = page_count
+        reviews = services.get_album_reviews(artist_id, album, page, page_size)
+        print(album_data)
+        return render_template("show_album.html", album_data=album_data,
+                               reviews=reviews, review_count=review_count,
+                               review_average=review_average, page=page,
+                               page_count=page_count)
 
 @app.route("/albumsearch", methods=["GET", "POST"])
 def albumsearch(page=1):
@@ -166,7 +180,6 @@ def albumsearch(page=1):
         filled = {"artist": artist, "album": album, "genre": genre, "year": year}
         filled = {k: v if v else None for k, v in filled.items()}
         length = services.albumsearch_count(filled)
-        print(length)
         album_obj = services.albumsearch(filled, page, page_size)
         page_count = math.ceil(length / page_size)
         page_count = max(page_count, 1)

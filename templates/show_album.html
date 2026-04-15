@@ -1,22 +1,22 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2 style="text-transform: uppercase">{{ artist }} - {{ album }}</h2>
+<h2 style="text-transform: uppercase">{{ album_data["artist"] }} - {{ album_data["album"] }}</h2>
 <h3>Album info:</h3>
 
 <h4>Released:</h4>
 <p>
-  {{ year }}
+  {{ album_data["year"] }}
 </p>
 
 <h4>Track list:</h4>
 <p>
-  {{ songlist | show_lines }}
+  {{ album_data["songlist"] | show_lines }}
 </p>
 
 <h4>Genres:</h4>
 <p>
-  {% for genre in genres %}
+  {% for genre in album_data["genres"] %}
     {{ genre }}<br />
   {% endfor %}
 </p>
@@ -24,8 +24,8 @@
 {% if session.user_id %}
 <h3>Actions:</h3>
 <p>
-  <a href="/{{ artist }}/{{ album }}/edit">Edit album</a>
-  <a href="/{{ artist }}/{{ album }}/review">Review this album</a>
+  <a href="/{{ album_data['artist'] }}/{{ album_data['album'] }}/edit">Edit album</a>
+  <a href="/{{ album_data['artist'] }}/{{ album_data['album'] }}/review">Review this album</a>
 </p>
 {% endif %}
 
@@ -42,13 +42,30 @@
 <p>
   <ul>
   {% for review in reviews %}
-    <li><a href="/{{ artist }}/{{ album }}/{{ review[2] }}">{{ review[0][2] }}/5</a>
-    by <a href="/{{ review[0][0] }}">{{ review[1] }}</a>
-    at {{ review[0][3] }}{% if review[0][4] != None %},
-    edited at {{ review[0][4] }}{% endif %}</li>
+    <li><a href="/{{ album_data['artist'] }}/{{ album_data['album'] }}/{{ review[0] }}">{{ review[5] }}/5</a>
+    by <a href="/{{ review[1] }}">{{ review[2] }}</a>
+    at {{ review[6] }}{% if review[7] != None %},
+    edited at {{ review[7] }}{% endif %}</li>
   {% endfor %}
   </ul>
 </p>
+{% if page_count > 1 %}
+<div id="pagination">
+  <p>
+    <form action="/{{ album_data['artist'] }}/{{ album_data['album'] }}" method="post">
+      <input type="submit" value="&lt;" />
+      <input type="hidden" name="page" value="{{ page - 1 }}" />
+      <input type="hidden" name="album_data" value="{{ album_data }}" />
+    </form>
+    Page {{ page }}/{{ page_count}}
+    <form action="/{{ album_data['artist'] }}/{{ album_data['album'] }}" method="post">
+      <input type="submit" value="&gt;" />
+      <input type="hidden" name="page" value="{{ page + 1 }}" />
+      <input type="hidden" name="album_data" value="{{ album_data }}" />
+    </form>
+  </p>
+</div>
+{% endif %}
 
 {% endif %}
 
