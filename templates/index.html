@@ -13,5 +13,20 @@
       <a href="/{{ review[3] }}/{{ review[2] }}/{{ review[0] }}">{{ review[4] }}/5</a>
     </p>
   {% endfor %}
+  {% if page_count > 1 %}
+  <div id="pagination">
+    <p>
+      <form action="/" method="post">
+        <input type="submit" value="&lt;" />
+        <input type="hidden" name="page" value="{{ page - 1 }}" />
+      </form>
+      Page {{ page }}/{{ page_count}}
+      <form action="/" method="post">
+        <input type="submit" value="&gt;" />
+        <input type="hidden" name="page" value="{{ page + 1 }}" />
+      </form>
+    </p>
+  </div>
+  {% endif %}
 
 {% endblock %}

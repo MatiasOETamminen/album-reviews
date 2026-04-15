@@ -23,10 +23,25 @@ def check_csrf():
     if request.form["csrf_token"] != session["csrf_token"]:
         abort(403)
 
-@app.route("/")
-def index():
-    reviews = services.get_all_reviews()
-    return render_template("index.html", reviews=reviews)
+@app.route("/", methods=["GET", "POST"])
+def index(page=1):
+    page_size = 10
+    review_count = services.count_all_reviews()
+    page_count = math.ceil(review_count / page_size)
+    page_count = max(page_count, 1)
+    if request.method == "GET":
+        reviews = services.get_all_reviews(page, page_size)
+        return render_template("index.html", reviews=reviews, page=page,
+                               page_count=page_count)
+    if request.method == "POST":
+        page = int(request.form["page"])
+        if page < 1:
+            page = 1
+        if page > page_count:
+            page = page_count
+        reviews = services.get_all_reviews(page, page_size)
+        return render_template("index.html", reviews=reviews, page=page,
+                               page_count=page_count)
 
 @app.route("/register")
 def register():
