@@ -3,7 +3,6 @@ import sqlite3
 import markupsafe
 import re
 import math
-import ast
 from flask import Flask
 from flask import abort, flash, redirect, render_template, request, session
 import db
@@ -131,33 +130,31 @@ def show_album(artist, album, page=1):
     review_average = services.albumaverage(artist_id, album)
     if not artist:
         abort(404)
+    album_obj = services.get_album(artist_id, album)
+    if not album_obj:
+        abort(404)
+    album = album_obj[0]
+    year = album_obj[1]
+    songlist = album_obj[2]
+    genre_ids = [g[0] for g in services.get_genre_ids(artist_id, album)]
+    genres = []
+    for genre_id in genre_ids:
+        genres.append(services.get_genre_name(genre_id))
+    reviews = services.get_album_reviews(artist_id, album, page, page_size)
+    album_data = {"artist": artist, "album": album,
+                    "year": year, "songlist": songlist, "genres": genres}
     if request.method == "GET":
-        album_obj = services.get_album(artist_id, album)
-        if not album_obj:
-            abort(404)
-        album = album_obj[0]
-        year = album_obj[1]
-        songlist = album_obj[2]
-        genre_ids = [g[0] for g in services.get_genre_ids(artist_id, album)]
-        genres = []
-        for genre_id in genre_ids:
-            genres.append(services.get_genre_name(genre_id))
-        reviews = services.get_album_reviews(artist_id, album, page, page_size)
-        album_data = {"artist": artist, "album": album,
-                      "year": year, "songlist": songlist, "genres": genres}
         return render_template("show_album.html", album_data=album_data,
                                reviews=reviews, review_count=review_count,
                                review_average=review_average, page=page,
                                page_count=page_count)
     if request.method == "POST":
-        album_data = ast.literal_eval(request.form["album_data"])
         page = int(request.form["page"])
         if page < 1:
             page = 1
         if page > page_count:
             page = page_count
         reviews = services.get_album_reviews(artist_id, album, page, page_size)
-        print(album_data)
         return render_template("show_album.html", album_data=album_data,
                                reviews=reviews, review_count=review_count,
                                review_average=review_average, page=page,
