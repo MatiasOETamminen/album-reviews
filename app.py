@@ -136,10 +136,8 @@ def show_album(artist, album, page=1):
     album = album_obj[0]
     year = album_obj[1]
     songlist = album_obj[2]
-    genre_ids = [g[0] for g in services.get_genre_ids(artist_id, album)]
-    genres = []
-    for genre_id in genre_ids:
-        genres.append(services.get_genre_name(genre_id))
+    genres = services.get_genres(artist_id, album)
+    genres = [g[0] for g in genres]
     reviews = services.get_album_reviews(artist_id, album, page, page_size)
     album_data = {"artist": artist, "album": album,
                     "year": year, "songlist": songlist, "genres": genres}

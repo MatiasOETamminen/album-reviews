@@ -87,22 +87,13 @@ def add_genres(genres):
         genre_ids.append(get_genre(genre))
     return genre_ids
 
-def get_genre(genre):
-    sql = """SELECT id FROM genres
-             WHERE name = ?;"""
-    result = db.query(sql, [genre])
-    return result[0][0] if result else None
-
-def get_genre_ids(artist_id, album):
-    sql = """SELECT genre_id FROM albumgenres
-             WHERE album_name = ? AND album_artist_id = ?;"""
+def get_genres(artist_id, album):
+    sql = """SELECT g.name
+             FROM genres AS g, albumgenres AS ag
+             WHERE g.id = ag.genre_id
+             AND ag.album_name = ?
+             AND ag.album_artist_id = ?;"""
     return db.query(sql, [album, artist_id])
-
-def get_genre_name(genre_id):
-    sql = """SELECT name FROM genres
-             WHERE id = ?;"""
-    result = db.query(sql, [genre_id])
-    return result[0][0] if result else None
 
 def add_album(artist_id, album, year, songlist, genre_ids):
     sql = """INSERT INTO albums (artist_id, name, year, songlist)
