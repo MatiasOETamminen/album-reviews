@@ -221,12 +221,21 @@ def add_comment(content, review_id, user_id):
              VALUES (?, ?, ?, datetime('now'));"""
     db.execute(sql, [review_id, user_id, content])
 
-def get_comments(review_id):
+def count_comments(review_id):
+    sql = """SELECT COUNT(id) FROM comments
+             WHERE review_id = ?;"""
+    return db.query(sql, [review_id])[0][0]
+
+def get_comments(review_id, page, page_size):
     sql = """SELECT c.id, c.review_id, c.user_id, u.username, c.content, 
              c.sent_at, c.edited_at
              FROM comments AS c, users AS u
-             WHERE c.user_id = u.id AND c.review_id = ?;"""
-    return db.query(sql, [review_id])
+             WHERE c.user_id = u.id AND c.review_id = ?
+             ORDER BY c.sent_at DESC
+             LIMIT ? OFFSET ?;"""
+    limit = page_size
+    offset = page_size * (page - 1)
+    return db.query(sql, [review_id, limit, offset])
 
 def usersearch(name):
     sql = """SELECT id, username FROM users

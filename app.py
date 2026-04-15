@@ -247,8 +247,9 @@ def review_album(artist, album):
     review_id = db.last_insert_id()
     return redirect("/" + str(artist) + "/" + str(album) + "/" + str(review_id))
 
-@app.route("/<artist>/<album>/<int:review_id>")
-def show_review(artist, album, review_id):
+@app.route("/<artist>/<album>/<int:review_id>", methods=["GET", "POST"])
+def show_review(artist, album, review_id, page=1):
+    page_size = 10
     artist_id = services.get_artist(artist)
     if not artist_id:
         abort(404)
@@ -267,10 +268,26 @@ def show_review(artist, album, review_id):
     if not found:
         abort(404)
     username = services.get_username(review[0])
-    comments = services.get_comments(review_id)
-    return render_template("show_review.html", artist=artist, artist_id=artist_id,
-                           album=album, review=review, review_id=review_id,
-                           username=username, comments=comments)
+    comment_count = services.count_comments(review_id)
+    page_count = math.ceil(comment_count / page_size)
+    page_count = max(page_count, 1)
+    if request.method == "GET":
+        comments = services.get_comments(review_id, page, page_size)
+        return render_template("show_review.html", artist=artist, artist_id=artist_id,
+                            album=album, review=review, review_id=review_id,
+                            username=username, comments=comments, page=page,
+                            page_count=page_count)
+    if request.method == "POST":
+        page = int(request.form["page"])
+        if page < 1:
+            page = 1
+        if page > page_count:
+            page = page_count
+        comments = services.get_comments(review_id, page, page_size)
+        return render_template("show_review.html", artist=artist, artist_id=artist_id,
+                            album=album, review=review, review_id=review_id,
+                            username=username, comments=comments, page=page,
+                            page_count=page_count)
 
 @app.route("/<artist>/<album>/<int:review_id>/edit", methods=["GET", "POST"])
 def edit_review(artist, album, review_id):
