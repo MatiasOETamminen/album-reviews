@@ -240,8 +240,17 @@ def get_comments(review_id, page, page_size):
     offset = page_size * (page - 1)
     return db.query(sql, [review_id, limit, offset])
 
-def usersearch(name):
-    sql = """SELECT id, username FROM users
+def usersearch_count(name):
+    sql = """SELECT COUNT(id) FROM users
              WHERE username LIKE ?
              COLLATE NOCASE;"""
-    return db.query(sql, ["%" + name + "%"])
+    return db.query(sql, ["%" + name + "%"])[0][0]
+
+def usersearch(name, page, page_size):
+    sql = """SELECT id, username FROM users
+             WHERE username LIKE ?
+             COLLATE NOCASE
+             LIMIT ? OFFSET ?;"""
+    limit = page_size
+    offset = page_size * (page - 1)
+    return db.query(sql, ["%" + name + "%", limit, offset])

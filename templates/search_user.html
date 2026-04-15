@@ -9,6 +9,7 @@
     <input type="text" name="name" id="name" value="{{ filled.name }}" maxlength="1000" />
   </p>
   <input type="submit" value="Search" />
+  <input type="hidden" name="page" value="{{ page }}" />
 </form>
 {% if results != None %}
   {% if results != [] %}
@@ -17,6 +18,23 @@
     <li><a href="/{{ result[0] }}">{{ result[1] }}</a></li>
     {% endfor %}
   </ul>
+  {% if page_count > 1 %}
+  <div id="pagination">
+    <p>
+      <form action="/usersearch" method="post">
+        <input type="submit" value="&lt;" />
+        <input type="hidden" name="page" value="{{ page - 1 }}" />
+        <input type="hidden" name="name" value="{{ filled.username }}" />
+      </form>
+      Page {{ page }}/{{ page_count }}
+      <form action="/usersearch" method="post">
+        <input type="submit" value="&gt;" />
+        <input type="hidden" name="page" value="{{ page + 1 }}" />
+        <input type="hidden" name="name" value="{{ filled.username }}" />
+      </form>
+    </p>
+  </div>
+  {% endif %}
   {% else %}
   <p>No users match your search query</p>
   {% endif %}

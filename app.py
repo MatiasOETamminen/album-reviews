@@ -408,13 +408,28 @@ def show_user(user_id, page=1):
                             page_count=page_count)
 
 @app.route("/usersearch", methods=["GET", "POST"])
-def search_user():
+def search_user(page=1):
+    page_size = 10
     if request.method == "GET":
-        return render_template("search_user.html", results=None, filled={})
+        length = 0
+        page_count = 1
+        return render_template("search_user.html", results=None, filled={},
+                               page=page, page_count=page_count)
     if request.method == "POST":
         username = request.form["name"].strip()
+        page = int(request.form["page"])
         filled = {"username": username}
-        results = []
         if username:
-            results += services.usersearch(username)
-        return render_template("search_user.html", results=results, filled=filled)
+            length = services.usersearch_count(username)
+            results = services.usersearch(username, page, page_size)
+        else:
+            length = 0
+            results = []
+        page_count = math.ceil(length / page_size)
+        page_count = max(page_count, 1)
+        if page < 1:
+            page = 1
+        if page > page_count:
+            page = page_count
+        return render_template("search_user.html", results=results, filled=filled,
+                               page=page, page_count=page_count)
