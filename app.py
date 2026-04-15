@@ -138,10 +138,10 @@ def show_album(artist, album, page=1):
     songlist = album_obj[2]
     genres = services.get_genres(artist_id, album)
     genres = [g[0] for g in genres]
-    reviews = services.get_album_reviews(artist_id, album, page, page_size)
     album_data = {"artist": artist, "album": album,
                     "year": year, "songlist": songlist, "genres": genres}
     if request.method == "GET":
+        reviews = services.get_album_reviews(artist_id, album, page, page_size)
         return render_template("show_album.html", album_data=album_data,
                                reviews=reviews, review_count=review_count,
                                review_average=review_average, page=page,
