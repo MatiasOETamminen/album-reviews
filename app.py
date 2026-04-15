@@ -380,15 +380,32 @@ def comment():
     services.add_comment(content, review_id, user_id)
     return redirect("/" + str(artist) + "/" + str(album) + "/" + str(review_id))
 
-@app.route("/<int:user_id>")
-def show_user(user_id):
-    user_reviews = services.get_user_reviews(user_id)
+@app.route("/<int:user_id>", methods=["GET", "POST"])
+def show_user(user_id, page=1):
+    page_size = 10
     username = services.get_username(user_id)
-    review_count = len(user_reviews)
-    review_average = services.useraverage(user_id)
-    return render_template("show_user.html", user_id=user_id, username=username,
-                           user_reviews=user_reviews, review_count=review_count,
-                           review_average=review_average)
+    stats = services.count_user_reviews(user_id)
+    review_count = stats[0]
+    review_average = stats[1]
+    page_count = math.ceil(review_count / page_size)
+    page_count = max(page_count, 1)
+    if request.method == "GET":
+        user_reviews = services.get_user_reviews(user_id, page, page_size)
+        return render_template("show_user.html", user_id=user_id, username=username,
+                            user_reviews=user_reviews, review_count=review_count,
+                            review_average=review_average, page=page,
+                            page_count=page_count)
+    if request.method == "POST":
+        page = int(request.form["page"])
+        if page < 1:
+            page = 1
+        if page > page_count:
+            page = page_count
+        user_reviews = services.get_user_reviews(user_id, page, page_size)
+        return render_template("show_user.html", user_id=user_id, username=username,
+                            user_reviews=user_reviews, review_count=review_count,
+                            review_average=review_average, page=page,
+                            page_count=page_count)
 
 @app.route("/usersearch", methods=["GET", "POST"])
 def search_user():

@@ -21,6 +21,22 @@
   </ul>
 </p>
 
+{% if page_count > 1 %}
+<div id="pagination">
+  <p>
+    <form action="/{{ user_id }}" method="post">
+      <input type="submit" value="&lt;" />
+      <input type="hidden" name="page" value="{{ page - 1 }}" />
+    </form>
+    Page {{ page }}/{{ page_count}}
+    <form action="/{{ user_id }}" method="post">
+      <input type="submit" value="&gt;" />
+      <input type="hidden" name="page" value="{{ page + 1 }}" />
+    </form>
+  </p>
+</div>
+{% endif %}
+
 {% endif %}
 
 {% endblock %}

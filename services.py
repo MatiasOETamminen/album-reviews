@@ -194,20 +194,23 @@ def get_username(user_id):
     result = db.query(sql, [user_id])
     return result[0][0] if result else None
 
-def get_user_reviews(user_id):
+def count_user_reviews(user_id):
+    sql = """SELECT COUNT(id), ROUND(AVG(grade), 2) FROM reviews
+             WHERE user_id = ?;"""
+    return db.query(sql, [user_id])[0]
+
+def get_user_reviews(user_id, page, page_size):
     sql = """SELECT r.id, u.username, r.album_name, a.name, r.grade, r.sent_at,
              r.edited_at
              FROM reviews AS r, users AS u, artists AS a
              WHERE u.id = ?
              AND r.user_id = u.id
              AND r.album_artist_id = a.id
-             ORDER BY r.sent_at DESC;"""
-    return db.query(sql, [user_id])
-
-def useraverage(user_id):
-    sql = """SELECT ROUND(AVG(grade), 2) FROM reviews WHERE user_id = ?;"""
-    result = db.query(sql, [user_id])
-    return result[0][0] if result else None
+             ORDER BY r.sent_at DESC
+             LIMIT ? OFFSET ?;"""
+    limit = page_size
+    offset = page_size * (page - 1)
+    return db.query(sql, [user_id, limit, offset])
 
 def albumaverage(artist_id, name):
     sql = """SELECT ROUND(AVG(grade), 2) FROM reviews
