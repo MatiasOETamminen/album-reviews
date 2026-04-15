@@ -245,7 +245,7 @@ def review_album(artist, album):
                                    filled=filled)
     services.add_review(user_id, album, artist_id, content, grade)
     review_id = db.last_insert_id()
-    return redirect("/" + str(artist + "/" + str(album) + "/" + str(review_id)))
+    return redirect("/" + str(artist) + "/" + str(album) + "/" + str(review_id))
 
 @app.route("/<artist>/<album>/<int:review_id>")
 def show_review(artist, album, review_id):
