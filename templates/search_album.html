@@ -42,7 +42,7 @@
         <input type="hidden" name="genre" value="{{ filled.genre }}" />
         <input type="hidden" name="year" value="{{ filled.year }}" />
       </form>
-      Page {{ page }}/{{ page_count}}
+      Page {{ page }}/{{ page_count }}
       <form action="/albumsearch" method="post">
         <input type="submit" value="&gt;" />
         <input type="hidden" name="page" value="{{ page + 1 }}" />
