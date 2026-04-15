@@ -31,8 +31,8 @@
     <li style="text-transform: uppercase"><a href="/{{ obj[2] }}/{{ obj[0] }}">{{ obj[2] }} - {{ obj[0] }}</a></li>
     {% endfor %}
   </ul>
+  {% if page_count > 1 %}
   <div id="pagination">
-    {% if page_count > 1 %}
     <p>
       <form action="/albumsearch" method="post">
         <input type="submit" value="&lt;" />
@@ -52,8 +52,8 @@
         <input type="hidden" name="year" value="{{ filled.year }}" />
       </form>
     </p>
-    {% endif %}
   </div>
+  {% endif %}
   {% else %}
   <p>No albums match your search query</p>
   {% endif %}
