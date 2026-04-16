@@ -7,7 +7,6 @@ CREATE TABLE albums (
     name TEXT,
     artist_id INTEGER NOT NULL,
     year INTEGER,
-    cover BLOB,
     songlist TEXT,
     PRIMARY KEY (name, artist_id),
     FOREIGN KEY (artist_id) REFERENCES artists(id)
