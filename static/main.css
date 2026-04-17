@@ -24,3 +24,22 @@ a:hover {
   display: flex;
   gap: 10px;
 }
+
+nav {
+  text-align: left;
+}
+
+nav ul {
+  padding: 0 0 1em;
+  margin: auto;
+}
+
+nav li {
+  display: inline-block;
+  padding: 0 1em;
+  margin: auto;
+}
+
+nav li:not(:last-of-type) {
+  border-right: 1px solid black;
+}

@@ -11,23 +11,23 @@
     <h1><a href="/">Album Reviews</a></h1>
 
     <nav>
-      <p>
-        <a href="/albumsearch">Search albums</a>
-        <a href="/usersearch">Search users</a>
+      <ul>
+        <li><a href="/albumsearch">Search albums</a></li>
+        <li><a href="/usersearch">Search users</a></li>
         {% if session.username %}
-        <a href="/new_album">Add a new album</a>
+        <li><a href="/new_album">Add a new album</a></li>
         {% endif %}
-      </p>
-      <p>
+      </ul>
+      <ul>
         {% if not session.username %}
-        <a href="/login">Log in</a>
-        <a href="/register">Register</a>
+        <li><a href="/login">Log in</a></li>
+        <li><a href="/register">Register</a></li>
         {% endif %}
         {% if session.username %}
-        You are logged in as <a href="/{{ session.user_id}}">{{ session.username }}</a>
-        <a href="/logout">Log out</a>
+        <li>You are logged in as <a href="/{{ session.user_id}}">{{ session.username }}</a></li>
+        <li><a href="/logout">Log out</a></li>
         {% endif %}
-      </p>
+      </ul>
     </nav>
   </header>
 
