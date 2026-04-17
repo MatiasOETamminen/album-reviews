@@ -58,3 +58,8 @@ CREATE TABLE comments (
     FOREIGN KEY (review_id) REFERENCES reviews(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE INDEX idx_review_id ON comments(review_id);
+CREATE INDEX idx_user_id ON reviews(user_id);
+CREATE INDEX idx_sent_at ON reviews(sent_at DESC);
+CREATE INDEX idx_albumreviews ON reviews(album_artist_id, album_name, sent_at DESC);
