@@ -268,19 +268,8 @@ def show_review(artist, album, review_id, page=1):
     artist_id = services.get_artist(artist)
     if not artist_id:
         abort(404)
-    album_obj = services.get_album(artist_id, album)
-    if not album_obj:
-        abort(404)
-    review = services.get_review(review_id)
+    review = services.get_review(review_id, artist_id, album)
     if not review:
-        abort(404)
-    albumreviews = services.get_review_ids(artist_id, album)
-    found = False
-    for albumreview in albumreviews:
-        if int(albumreview[0]) == review_id:
-            found = True
-            break
-    if not found:
         abort(404)
     username = services.get_username(review[0])
     comment_count = services.count_comments(review_id)
@@ -289,9 +278,9 @@ def show_review(artist, album, review_id, page=1):
     if request.method == "GET":
         comments = services.get_comments(review_id, page, page_size)
         return render_template("show_review.html", artist=artist, artist_id=artist_id,
-                            album=album, review=review, review_id=review_id,
-                            username=username, comments=comments, page=page,
-                            page_count=page_count)
+                               album=album, review=review, review_id=review_id,
+                               username=username, comments=comments, page=page,
+                               page_count=page_count)
     if request.method == "POST":
         page = int(request.form["page"])
         if page < 1:
@@ -300,9 +289,9 @@ def show_review(artist, album, review_id, page=1):
             page = page_count
         comments = services.get_comments(review_id, page, page_size)
         return render_template("show_review.html", artist=artist, artist_id=artist_id,
-                            album=album, review=review, review_id=review_id,
-                            username=username, comments=comments, page=page,
-                            page_count=page_count)
+                               album=album, review=review, review_id=review_id,
+                               username=username, comments=comments, page=page,
+                               page_count=page_count)
 
 @app.route("/<artist>/<album>/<int:review_id>/edit", methods=["GET", "POST"])
 def edit_review(artist, album, review_id):
@@ -310,22 +299,11 @@ def edit_review(artist, album, review_id):
     artist_id = services.get_artist(artist)
     if not artist_id:
         abort(404)
-    album_obj = services.get_album(artist_id, album)
-    if not album_obj:
-        abort(404)
-    review = services.get_review(review_id)
+    review = services.get_review(review_id, artist_id, album)
     if not review:
         abort(404)
-    albumreviews = services.get_review_ids(artist_id, album)
-    found = False
-    for albumreview in albumreviews:
-        if int(albumreview[0]) == review_id:
-            found = True
-            break
-    if not found:
-        abort(404)
     if request.method == "GET":
-        content = services.get_review(review_id)[1]
+        content = services.get_review(review_id, artist_id, album)[1]
         filled = {"content": content}
         return render_template("edit_review.html", artist=artist, artist_id=artist_id,
                                album=album, review=review, review_id=review_id,
@@ -357,19 +335,8 @@ def delete_review(artist, album, review_id):
     artist_id = services.get_artist(artist)
     if not artist_id:
         abort(404)
-    album_obj = services.get_album(artist_id, album)
-    if not album_obj:
-        abort(404)
-    review = services.get_review(review_id)
+    review = services.get_review(review_id, artist_id, album)
     if not review:
-        abort(404)
-    albumreviews = services.get_review_ids(artist_id, album)
-    found = False
-    for albumreview in albumreviews:
-        if int(albumreview[0]) == review_id:
-            found = True
-            break
-    if not found:
         abort(404)
     if request.method == "GET":
         return render_template("delete_review.html", review=review, artist=artist,

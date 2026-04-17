@@ -136,10 +136,10 @@ def edit_review(review_id, content, grade):
              WHERE id = ?;"""
     db.execute(sql, [content, grade, review_id])
 
-def get_review(review_id):
+def get_review(review_id, artist_id, album):
     sql = """SELECT user_id, content, grade, sent_at, edited_at FROM reviews
-             WHERE id = ?;"""
-    result = db.query(sql, [review_id])
+             WHERE id = ? AND album_artist_id = ? AND album_name = ?;"""
+    result = db.query(sql, [review_id, artist_id, album])
     return result[0] if result else None
 
 def get_review_ids(artist_id, album):
