@@ -374,9 +374,9 @@ def show_user(user_id, page=1):
     if request.method == "GET":
         user_reviews = services.get_user_reviews(user_id, page, page_size)
         return render_template("show_user.html", user_id=user_id, username=username,
-                            user_reviews=user_reviews, review_count=review_count,
-                            review_average=review_average, page=page,
-                            page_count=page_count)
+                               user_reviews=user_reviews, review_count=review_count,
+                               review_average=review_average, page=page,
+                               page_count=page_count)
     if request.method == "POST":
         page = int(request.form["page"])
         if page < 1:
@@ -385,9 +385,9 @@ def show_user(user_id, page=1):
             page = page_count
         user_reviews = services.get_user_reviews(user_id, page, page_size)
         return render_template("show_user.html", user_id=user_id, username=username,
-                            user_reviews=user_reviews, review_count=review_count,
-                            review_average=review_average, page=page,
-                            page_count=page_count)
+                               user_reviews=user_reviews, review_count=review_count,
+                               review_average=review_average, page=page,
+                               page_count=page_count)
 
 @app.route("/usersearch", methods=["GET", "POST"])
 def search_user(page=1):
