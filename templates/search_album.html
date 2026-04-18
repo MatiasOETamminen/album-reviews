@@ -24,7 +24,7 @@
   <input type="hidden" name="page" value="{{ page }}" />
 </form>
 {% if results != None %}
-  {% if results != [] %}
+  {% if album_obj[0] %}
   <h3>Search results:</h3>
   <ul>
     {% for obj in album_obj %}
