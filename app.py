@@ -1,8 +1,8 @@
 import secrets
 import sqlite3
-import markupsafe
 import re
 import math
+import markupsafe
 from flask import Flask
 from flask import abort, flash, redirect, render_template, request, session
 import db
@@ -29,19 +29,15 @@ def index(page=1):
     review_count = services.count_all_reviews()
     page_count = math.ceil(review_count / page_size)
     page_count = max(page_count, 1)
-    if request.method == "GET":
-        reviews = services.get_all_reviews(page, page_size)
-        return render_template("index.html", reviews=reviews, page=page,
-                               page_count=page_count)
+
     if request.method == "POST":
         page = int(request.form["page"])
-        if page < 1:
-            page = 1
-        if page > page_count:
-            page = page_count
-        reviews = services.get_all_reviews(page, page_size)
-        return render_template("index.html", reviews=reviews, page=page,
-                               page_count=page_count)
+        page = max(1, page)
+        page = min(page, page_count)
+
+    reviews = services.get_all_reviews(page, page_size)
+    return render_template("index.html", reviews=reviews, page=page,
+                           page_count=page_count)
 
 @app.route("/register")
 def register():
@@ -66,9 +62,6 @@ def create():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "GET":
-        return render_template("login.html")
-
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -80,6 +73,7 @@ def login():
             return redirect("/")
         flash("ERROR: Either the username or the password is incorrect")
         return redirect("/login")
+    return render_template("login.html")
 
 @app.route("/logout")
 def logout():
@@ -110,29 +104,37 @@ def create_album():
     genres_str = request.form["genres"].lower()
     filled = {"artist": artist, "album": album, "songlist": songlist,
               "genres": genres_str}
+    fail = False
+
     if not artist or len(artist) > 1000:
         flash("The artist name can be at most 1,000 characters")
-        return render_template("new_album.html", filled=filled)
+        fail = True
     if not album or len(album) > 1000:
         flash("The album name can be at most 1,000 characters")
-        return render_template("new_album.html", filled=filled)
+        fail = True
     if not re.search("^[0-9]{4}$", year):
         flash("The year is not valid")
-        return render_template("new_album.html", filled=filled)
+        fail = True
     if not songlist or len(songlist) > 1500:
         flash("The songlist can be at most 1,500 characters")
-        return render_template("new_album.html", filled=filled)
+        fail = True
     if not genres_str or len(genres_str) > 1000:
         flash("The genre list can be at most 1,000 characters")
+        fail = True
+
+    if fail:
         return render_template("new_album.html", filled=filled)
+
     genres = [genre.strip() for genre in genres_str.split(";")]
     genre_ids = services.add_genres(genres)
     artist_id = services.add_artist(artist)
+
     try:
         services.add_album(artist_id, album, year, songlist, genre_ids)
     except sqlite3.IntegrityError:
         flash("This album already exists")
         return redirect("/" + str(artist) + "/" + str(album))
+
     return redirect("/" + str(artist) + "/" + str(album))
 
 @app.route("/<artist>/<album>", methods=["GET", "POST"])
@@ -143,44 +145,42 @@ def show_album(artist, album, page=1):
     page_count = math.ceil(review_count / page_size)
     page_count = max(page_count, 1)
     review_average = services.albumaverage(artist_id, album)
+
     if not artist:
         abort(404)
     album_obj = services.get_album(artist_id, album)
     if not album_obj:
         abort(404)
+
     album = album_obj[0]
     year = album_obj[1]
     songlist = album_obj[2]
     genres = services.get_genres(artist_id, album)
     genres = [g[0] for g in genres]
     album_data = {"artist": artist, "album": album,
-                    "year": year, "songlist": songlist, "genres": genres}
-    if request.method == "GET":
-        reviews = services.get_album_reviews(artist_id, album, page, page_size)
-        return render_template("show_album.html", album_data=album_data,
-                               reviews=reviews, review_count=review_count,
-                               review_average=review_average, page=page,
-                               page_count=page_count)
+                  "year": year, "songlist": songlist, "genres": genres}
+
     if request.method == "POST":
         page = int(request.form["page"])
-        if page < 1:
-            page = 1
-        if page > page_count:
-            page = page_count
-        reviews = services.get_album_reviews(artist_id, album, page, page_size)
-        return render_template("show_album.html", album_data=album_data,
-                               reviews=reviews, review_count=review_count,
-                               review_average=review_average, page=page,
-                               page_count=page_count)
+        page = max(1, page)
+        page = min(page, page_count)
+
+    reviews = services.get_album_reviews(artist_id, album, page, page_size)
+    return render_template("show_album.html", album_data=album_data,
+                           reviews=reviews, review_count=review_count,
+                           review_average=review_average, page=page,
+                           page_count=page_count)
 
 @app.route("/albumsearch", methods=["GET", "POST"])
 def albumsearch(page=1):
     page_size = 10
+    filled = {}
+    album_obj = []
+
     if request.method == "GET":
         length = 0
         page_count = 1
-        return render_template("search_album.html", results=None, filled={},
-                               page=page, page_count=page_count)
+
     if request.method == "POST":
         album = request.form["album"].lower().strip()
         artist = request.form["artist"].lower().strip()
@@ -193,13 +193,12 @@ def albumsearch(page=1):
         album_obj = services.albumsearch(filled, page, page_size)
         page_count = math.ceil(length / page_size)
         page_count = max(page_count, 1)
-        if page < 1:
-            page = 1
-        if page > page_count:
-            page = page_count
+        page = max(1, page)
+        page = min(page, page_count)
         filled = {k: v if v is not None else "" for k, v in filled.items()}
-        return render_template("search_album.html", album_obj=album_obj,
-                               filled=filled, page=page, page_count=page_count)
+
+    return render_template("search_album.html", album_obj=album_obj,
+                           filled=filled, page=page, page_count=page_count)
 
 @app.route("/<artist>/<album>/edit", methods=["GET", "POST"])
 def edit_album(artist, album):
@@ -210,9 +209,11 @@ def edit_album(artist, album):
     songlist = services.get_album(artist_id, album)[2]
     if not songlist:
         abort(404)
+
     if request.method == "GET":
         return render_template("edit_album.html", artist=artist, album=album,
                                songlist=songlist,genres=None)
+
     if request.method == "POST":
         check_csrf()
         content = request.form["songlist"]
@@ -226,7 +227,8 @@ def edit_album(artist, album):
             genre_ids = services.add_genres(genres)
             services.update_genres(artist_id, album, genre_ids)
         services.update_album(artist_id, album, content)
-        return redirect("/" + str(artist) + "/" + str(album))
+
+    return redirect("/" + str(artist) + "/" + str(album))
 
 @app.route("/<artist>/<album>/review", methods=["GET", "POST"])
 def review_album(artist, album):
@@ -238,9 +240,11 @@ def review_album(artist, album):
     album_obj = services.get_album(artist_id, album)
     if not album_obj:
         abort(404)
+
     if request.method == "GET":
         return render_template("new_review.html", artist=artist, album=album,
                                filled={})
+
     if request.method == "POST":
         check_csrf()
         content = request.form["content"]
@@ -259,6 +263,7 @@ def review_album(artist, album):
             filled = {"content": content}
             return render_template("new_review.html", artist=artist, album=album,
                                    filled=filled)
+
     services.add_review(user_id, album, artist_id, content, grade)
     review_id = db.last_insert_id()
     return redirect("/" + str(artist) + "/" + str(album) + "/" + str(review_id))
@@ -276,23 +281,17 @@ def show_review(artist, album, review_id, page=1):
     comment_count = services.count_comments(review_id)
     page_count = math.ceil(comment_count / page_size)
     page_count = max(page_count, 1)
-    if request.method == "GET":
-        comments = services.get_comments(review_id, page, page_size)
-        return render_template("show_review.html", artist=artist, artist_id=artist_id,
-                               album=album, review=review, review_id=review_id,
-                               username=username, comments=comments, page=page,
-                               page_count=page_count)
+
     if request.method == "POST":
         page = int(request.form["page"])
-        if page < 1:
-            page = 1
-        if page > page_count:
-            page = page_count
-        comments = services.get_comments(review_id, page, page_size)
-        return render_template("show_review.html", artist=artist, artist_id=artist_id,
-                               album=album, review=review, review_id=review_id,
-                               username=username, comments=comments, page=page,
-                               page_count=page_count)
+        page = max(1, page)
+        page = min(page, page_count)
+
+    comments = services.get_comments(review_id, page, page_size)
+    return render_template("show_review.html", artist=artist, artist_id=artist_id,
+                            album=album, review=review, review_id=review_id,
+                            username=username, comments=comments, page=page,
+                            page_count=page_count)
 
 @app.route("/<artist>/<album>/<int:review_id>/edit", methods=["GET", "POST"])
 def edit_review(artist, album, review_id):
@@ -303,30 +302,36 @@ def edit_review(artist, album, review_id):
     review = services.get_review(review_id, artist_id, album)
     if not review:
         abort(404)
+
     if request.method == "GET":
         content = services.get_review(review_id, artist_id, album)[1]
         filled = {"content": content}
         return render_template("edit_review.html", artist=artist, artist_id=artist_id,
                                album=album, review=review, review_id=review_id,
                                filled=filled)
+
     if request.method == "POST":
         check_csrf()
         content = request.form["content"]
         if not content:
             flash("The review cannot be empty")
-            return render_template("new_review.html", artist=artist, album=album,
-                                   review_id=review_id, filled={})
+            return render_template("edit_review.html", artist=artist, artist_id=artist_id,
+                                   album=album, review=review, review_id=review_id,
+                                   filled={})
         if len(content) > 40000:
             flash("The length of the review can be at most 40,000 characters")
             filled = {"content": content}
-            return render_template("new_review.html", artist=artist, album=album,
-                                   review_id=review_id, filled=filled)
+            return render_template("edit_review.html", artist=artist, artist_id=artist_id,
+                                   album=album, review=review, review_id=review_id,
+                                   filled=filled)
         grade = request.form["grade"]
         if not grade or grade not in {"1", "2", "3", "4", "5"}:
             flash("Please select a grade")
             filled = {"content": content}
-            return render_template("new_review.html", artist=artist, album=album,
-                                   review_id=review_id, filled=filled)
+            return render_template("edit_review.html", artist=artist, artist_id=artist_id,
+                                   album=album, review=review, review_id=review_id,
+                                   filled=filled)
+
     services.edit_review(review_id, content, grade)
     return redirect("/" + str(artist + "/" + str(album) + "/" + str(review_id)))
 
@@ -339,15 +344,18 @@ def delete_review(artist, album, review_id):
     review = services.get_review(review_id, artist_id, album)
     if not review:
         abort(404)
+
     if request.method == "GET":
         return render_template("delete_review.html", review=review, artist=artist,
                                album=album, review_id=review_id)
+
     if request.method == "POST":
         check_csrf()
         if "delete" in request.form:
             services.delete_review(review_id)
             return redirect("/" + str(artist) + "/" + str(album))
-        return redirect("/" + str(artist) + "/" + str(album) + "/" + str(review_id))
+
+    return redirect("/" + str(artist) + "/" + str(album) + "/" + str(review_id))
 
 @app.route("/comment", methods=["POST"])
 def comment():
@@ -372,32 +380,28 @@ def show_user(user_id, page=1):
     review_average = stats[1]
     page_count = math.ceil(review_count / page_size)
     page_count = max(page_count, 1)
-    if request.method == "GET":
-        user_reviews = services.get_user_reviews(user_id, page, page_size)
-        return render_template("show_user.html", user_id=user_id, username=username,
-                               user_reviews=user_reviews, review_count=review_count,
-                               review_average=review_average, page=page,
-                               page_count=page_count)
+
     if request.method == "POST":
         page = int(request.form["page"])
-        if page < 1:
-            page = 1
-        if page > page_count:
-            page = page_count
-        user_reviews = services.get_user_reviews(user_id, page, page_size)
-        return render_template("show_user.html", user_id=user_id, username=username,
-                               user_reviews=user_reviews, review_count=review_count,
-                               review_average=review_average, page=page,
-                               page_count=page_count)
+        page = max(1, page)
+        page = min(page, page_count)
+
+    user_reviews = services.get_user_reviews(user_id, page, page_size)
+    return render_template("show_user.html", user_id=user_id, username=username,
+                           user_reviews=user_reviews, review_count=review_count,
+                           review_average=review_average, page=page,
+                           page_count=page_count)
 
 @app.route("/usersearch", methods=["GET", "POST"])
 def search_user(page=1):
     page_size = 10
+    filled = {}
+    results = None
+
     if request.method == "GET":
         length = 0
         page_count = 1
-        return render_template("search_user.html", results=None, filled={},
-                               page=page, page_count=page_count)
+
     if request.method == "POST":
         username = request.form["name"].strip()
         page = int(request.form["page"])
@@ -410,9 +414,8 @@ def search_user(page=1):
             results = []
         page_count = math.ceil(length / page_size)
         page_count = max(page_count, 1)
-        if page < 1:
-            page = 1
-        if page > page_count:
-            page = page_count
-        return render_template("search_user.html", results=results, filled=filled,
-                               page=page, page_count=page_count)
+        page = max(1, page)
+        page = min(page, page_count)
+
+    return render_template("search_user.html", results=results, filled=filled,
+                           page=page, page_count=page_count)

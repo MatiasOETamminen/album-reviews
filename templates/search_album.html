@@ -23,7 +23,7 @@
   <input type="submit" value="Search" />
   <input type="hidden" name="page" value="{{ page }}" />
 </form>
-{% if results != None %}
+{% if request.method == "POST" %}
   {% if album_obj[0] %}
   <h3>Search results:</h3>
   <ul>
