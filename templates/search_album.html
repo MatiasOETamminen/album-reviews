@@ -33,25 +33,50 @@
   </ul>
   {% if page_count > 1 %}
   <div id="pagination">
-    <p>
-      <form action="/albumsearch" method="post">
-        <input type="submit" value="&lt;" />
-        <input type="hidden" name="page" value="{{ page - 1 }}" />
-        <input type="hidden" name="album" value="{{ filled.album }}" />
-        <input type="hidden" name="artist" value="{{ filled.artist}}" />
-        <input type="hidden" name="genre" value="{{ filled.genre }}" />
-        <input type="hidden" name="year" value="{{ filled.year }}" />
-      </form>
-      Page {{ page }}/{{ page_count }}
-      <form action="/albumsearch" method="post">
-        <input type="submit" value="&gt;" />
-        <input type="hidden" name="page" value="{{ page + 1 }}" />
-        <input type="hidden" name="album" value="{{ filled.album }}" />
-        <input type="hidden" name="artist" value="{{ filled.artist}}" />
-        <input type="hidden" name="genre" value="{{ filled.genre }}" />
-        <input type="hidden" name="year" value="{{ filled.year }}" />
-      </form>
-    </p>
+    <form action="/albumsearch" method="post">
+      <input type="submit" value="&lt;&lt;" />
+      <input type="hidden" name="page" value="{{ 1}}" />
+      <input type="hidden" name="album" value="{{ filled.album }}" />
+      <input type="hidden" name="artist" value="{{ filled.artist}}" />
+      <input type="hidden" name="genre" value="{{ filled.genre }}" />
+      <input type="hidden" name="year" value="{{ filled.year }}" />
+    </form>
+    <form action="/albumsearch" method="post">
+      <input type="submit" value="&lt;" />
+      <input type="hidden" name="page" value="{{ page - 1 }}" />
+      <input type="hidden" name="album" value="{{ filled.album }}" />
+      <input type="hidden" name="artist" value="{{ filled.artist}}" />
+      <input type="hidden" name="genre" value="{{ filled.genre }}" />
+      <input type="hidden" name="year" value="{{ filled.year }}" />
+    </form>
+    Page {{ page }}/{{ page_count }}
+    <form action="/albumsearch" method="post">
+      <input type="submit" value="&gt;" />
+      <input type="hidden" name="page" value="{{ page + 1 }}" />
+      <input type="hidden" name="album" value="{{ filled.album }}" />
+      <input type="hidden" name="artist" value="{{ filled.artist}}" />
+      <input type="hidden" name="genre" value="{{ filled.genre }}" />
+      <input type="hidden" name="year" value="{{ filled.year }}" />
+    </form>
+    <form action="/albumsearch" method="post">
+      <input type="submit" value="&gt;&gt;" />
+      <input type="hidden" name="page" value="{{ page_count }}" />
+      <input type="hidden" name="album" value="{{ filled.album }}" />
+      <input type="hidden" name="artist" value="{{ filled.artist}}" />
+      <input type="hidden" name="genre" value="{{ filled.genre }}" />
+      <input type="hidden" name="year" value="{{ filled.year }}" />
+    </form>
+  </div>
+  <div id="pagebox">
+    <form action="/albumsearch" method="post">
+      <label for="page">Go to page</label>: <br />
+      <input type="text" name="page" id="page" size="8" pattern="[0-9]{1,10}" required />
+      <input type="hidden" name="album" value="{{ filled.album }}" />
+      <input type="hidden" name="artist" value="{{ filled.artist}}" />
+      <input type="hidden" name="genre" value="{{ filled.genre }}" />
+      <input type="hidden" name="year" value="{{ filled.year }}" />
+      <input type="submit" value="Go" />
+    </form>
   </div>
   {% endif %}
   {% else %}

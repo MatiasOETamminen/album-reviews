@@ -20,19 +20,35 @@
   </ul>
   {% if page_count > 1 %}
   <div id="pagination">
-    <p>
-      <form action="/usersearch" method="post">
-        <input type="submit" value="&lt;" />
-        <input type="hidden" name="page" value="{{ page - 1 }}" />
-        <input type="hidden" name="name" value="{{ filled.username }}" />
-      </form>
-      Page {{ page }}/{{ page_count }}
-      <form action="/usersearch" method="post">
-        <input type="submit" value="&gt;" />
-        <input type="hidden" name="page" value="{{ page + 1 }}" />
-        <input type="hidden" name="name" value="{{ filled.username }}" />
-      </form>
-    </p>
+    <form action="/usersearch" method="post">
+      <input type="submit" value="&lt;&lt;" />
+      <input type="hidden" name="page" value="{{ 1 }}" />
+      <input type="hidden" name="name" value="{{ filled.username }}" />
+    </form>
+    <form action="/usersearch" method="post">
+      <input type="submit" value="&lt;" />
+      <input type="hidden" name="page" value="{{ page - 1 }}" />
+      <input type="hidden" name="name" value="{{ filled.username }}" />
+    </form>
+    Page {{ page }}/{{ page_count }}
+    <form action="/usersearch" method="post">
+      <input type="submit" value="&gt;" />
+      <input type="hidden" name="page" value="{{ page + 1 }}" />
+      <input type="hidden" name="name" value="{{ filled.username }}" />
+    </form>
+    <form action="/usersearch" method="post">
+      <input type="submit" value="&gt;&gt;" />
+      <input type="hidden" name="page" value="{{ page_count }}" />
+      <input type="hidden" name="name" value="{{ filled.username }}" />
+    </form>
+  </div>
+  <div id="pagebox">
+    <form action="/usersearch" method="post">
+      <label for="page">Go to page</label>: <br />
+      <input type="text" name="page" id="page" size="8" pattern="[0-9]{1,10}" required />
+      <input type="hidden" name="name" value="{{ filled.username }}" />
+      <input type="submit" value="Go" />
+    </form>
   </div>
   {% endif %}
   {% else %}
