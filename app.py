@@ -220,10 +220,11 @@ def edit_album(artist, album):
         if len(genres_str) > 1000:
             flash("The genre list can be at most 1,000 characters")
             return render_template("edit_album.html", artist=artist, album=album,
-                               songlist=songlist, genres=genres)
-        genres = [genre.strip() for genre in genres_str.split(";")]
-        genre_ids = services.add_genres(genres)
-        services.update_genres(artist_id, album, genre_ids)
+                                   songlist=songlist, genres=genres)
+        genres = [g.strip() for g in genres_str.split(";") if len(g.strip()) > 0]
+        if len(genres) > 0:
+            genre_ids = services.add_genres(genres)
+            services.update_genres(artist_id, album, genre_ids)
         services.update_album(artist_id, album, content)
         return redirect("/" + str(artist) + "/" + str(album))
 
