@@ -1,5 +1,5 @@
-import db
 import sqlite3
+import db
 
 def add_artist(name):
     try:
@@ -109,7 +109,6 @@ def add_album(artist_id, album, year, songlist, genre_ids):
         sql = """INSERT INTO albumgenres (album_name, album_artist_id, genre_id)
                  VALUES (?, ?, ?);"""
         db.execute(sql, [album, artist_id, genre])
-    return [album, artist_id, genre]
 
 def get_album(artist_id, album):
     sql = """SELECT name, year, songlist FROM albums
@@ -128,7 +127,7 @@ def update_genres(artist_id, album, genre_ids):
             sql = """INSERT INTO albumgenres (album_name, album_artist_id, genre_id)
                     VALUES (?, ?, ?);"""
             db.execute(sql, [album, artist_id, genre_id])
-        except:
+        except sqlite3.IntegrityError:
             pass
 
 def add_review(user_id, album, artist_id, content, grade):
@@ -243,7 +242,7 @@ def count_comments(review_id):
     return db.query(sql, [review_id])[0][0]
 
 def get_comments(review_id, page, page_size):
-    sql = """SELECT c.id, c.review_id, c.user_id, u.username, c.content, 
+    sql = """SELECT c.id, c.review_id, c.user_id, u.username, c.content,
              c.sent_at, c.edited_at
              FROM comments AS c, users AS u
              WHERE c.user_id = u.id AND c.review_id = ?
