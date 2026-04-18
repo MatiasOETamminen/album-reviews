@@ -25,17 +25,21 @@
 </p>
 {% endif %}
 
+{% if comments %}
+<div id="comments">
 <h3>Comments:</h3>
 
 {% for comment in comments %}
-  <p>
+  <h4>
     <a href="/{{ comment[2] }}">{{ comment[3] }}</a> at {{ comment[5] }}{% if comment[6] != None %},
     edited at {{ comment[6] }}{% endif %}:
-  </p>
+  </h4>
   <p>
     {{ comment[4] | show_lines }}
   </p>
 {% endfor %}
+</div>
+{% endif %}
 
 {% if page_count > 1 %}
 <div id="pagination">
