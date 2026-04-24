@@ -70,12 +70,6 @@ def albumsearch_count(filled):
 
     return db.query(sql, arguments)[0][0]
 
-def get_artist_name(artist_id):
-    sql = """SELECT name FROM artists
-             WHERE id = ?;"""
-    result = db.query(sql, [artist_id])
-    return result[0][0] if result else None
-
 def add_genres(genres):
     genre_ids = []
     for genre in genres:
@@ -147,12 +141,6 @@ def get_review(review_id, artist_id, album):
              WHERE id = ? AND album_artist_id = ? AND album_name = ?;"""
     result = db.query(sql, [review_id, artist_id, album])
     return result[0] if result else None
-
-def get_review_ids(artist_id, album):
-    sql = """SELECT id FROM reviews
-             WHERE album_artist_id = ?
-             AND album_name = ?;"""
-    return db.query(sql, [artist_id, album])
 
 def count_album_reviews(artist_id, album):
     sql = """SELECT COUNT(id)
