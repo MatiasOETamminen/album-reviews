@@ -7,6 +7,12 @@ body {
   margin-bottom: 1em;
   margin-inline: auto;
   font-family: serif;
+  background-color: rgb(240,240,240);
+}
+
+h1 {
+  font-size: 3em;
+  margin-bottom: 0.25em;
 }
 
 h1 a {
@@ -33,22 +39,37 @@ a:hover {
 }
 
 nav {
-  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
 }
 
 nav ul {
-  padding: 0 0 1em;
-  margin: auto;
+  padding: 0 0 1em 0;
+  margin: 0;
+  gap: 0;
+  list-style: none;
+  font-size: 0;
 }
 
 nav li {
   display: inline-block;
-  padding: 0 1em;
+  padding: 0 1em 0 1em;
   margin: auto;
+  font-size: 1rem;
 }
 
 nav li:not(:last-of-type) {
   border-right: 1px solid black;
+}
+
+nav li:first-of-type {
+  padding-left: 0;
+}
+
+nav li:last-of-type {
+  padding-right: 0;
 }
 
 #comments p {
