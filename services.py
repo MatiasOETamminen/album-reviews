@@ -1,4 +1,5 @@
 import sqlite3
+
 import db
 
 def add_artist(name):
